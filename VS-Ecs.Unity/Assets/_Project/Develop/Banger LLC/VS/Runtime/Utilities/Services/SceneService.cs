@@ -5,7 +5,7 @@ using UnitySceneManager = UnityEngine.SceneManagement.SceneManager;
 
 namespace VS.Runtime.Utilities
 {
-    public class SceneManager
+    public class SceneService
     {
         private const string LogTag = "SCENE";
         

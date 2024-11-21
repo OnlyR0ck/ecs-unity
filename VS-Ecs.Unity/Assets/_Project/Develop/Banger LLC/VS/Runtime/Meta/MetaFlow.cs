@@ -8,18 +8,18 @@ namespace VS.Runtime.Meta
     public class MetaFlow : IStartable
     {
         private readonly LoadingService _loadingService;
-        private readonly SceneManager _sceneManager;
+        private readonly SceneService _sceneService;
 
-        public MetaFlow(LoadingService loadingService, SceneManager sceneManager)
+        public MetaFlow(LoadingService loadingService, SceneService sceneService)
         {
             _loadingService = loadingService;
-            _sceneManager = sceneManager;
+            _sceneService = sceneService;
         }
 
         public async void Start()
         {
             await _loadingService.BeginLoading(new FooLoadingUnit(3));
-            _sceneManager.LoadScene(RuntimeConstants.Scenes.Core).Forget();
+            _sceneService.LoadScene(RuntimeConstants.Scenes.Core).Forget();
         }
     }
 }

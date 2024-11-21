@@ -8,12 +8,12 @@ namespace VS.Runtime.Core
     public class CoreFlow : IStartable
     {
         private readonly LoadingService _loadingService;
-        private readonly SceneManager _sceneManager;
+        private readonly SceneService _sceneService;
 
-        public CoreFlow(LoadingService loadingService, SceneManager sceneManager)
+        public CoreFlow(LoadingService loadingService, SceneService sceneService)
         {
             _loadingService = loadingService;
-            _sceneManager = sceneManager;
+            _sceneService = sceneService;
         }
 
         public async void Start()

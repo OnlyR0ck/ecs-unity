@@ -8,17 +8,17 @@ namespace VS.Runtime.Loading
     public class LoadingFlow : IStartable
     {
         private readonly LoadingService _loadingService;
-        private readonly SceneManager _sceneManager;
+        private readonly SceneService _sceneService;
 
-        public LoadingFlow(LoadingService loadingService, SceneManager sceneManager)
+        public LoadingFlow(LoadingService loadingService, SceneService sceneService)
         {
             _loadingService = loadingService;
-            _sceneManager = sceneManager;
+            _sceneService = sceneService;
         }
 
         public async void Start()
         {
-            _sceneManager.LoadScene(RuntimeConstants.Scenes.Core).Forget();
+            _sceneService.LoadScene(RuntimeConstants.Scenes.Core).Forget();
         }
     }
 }

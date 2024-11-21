@@ -15,7 +15,7 @@ namespace VS.Runtime.Bootstrap
         protected override void Configure(IContainerBuilder builder)
         {
             builder.Register<LoadingService>(Lifetime.Singleton);
-            builder.Register<SceneManager>(Lifetime.Singleton);
+            builder.Register<SceneService>(Lifetime.Singleton);
             
             builder.RegisterEntryPoint<BootstrapFlow>();
         }

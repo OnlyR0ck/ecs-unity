@@ -1,8 +1,7 @@
 {
-    "name": "UEPT.Editor",
+    "name": "VS.Editor",
     "rootNamespace": "",
     "references": [
-        "UEPT.Editor",
         "UEPT.Backend",
         "UEPT.Shared"
     ],
