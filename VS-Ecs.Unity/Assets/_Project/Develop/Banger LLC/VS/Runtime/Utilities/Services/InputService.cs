@@ -79,6 +79,7 @@ namespace VS.Runtime.Utilities
 
         private void HandlePointerUp(PointerEventData eventData)
         {
+            OnEndDrag?.Invoke(GetWorldPosition(eventData.position));
             _cts?.Cancel();
             _cts?.Dispose();
         }
