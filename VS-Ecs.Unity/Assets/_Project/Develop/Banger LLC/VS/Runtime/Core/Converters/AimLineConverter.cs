@@ -10,7 +10,7 @@ namespace VS.Runtime.Core.Converters
 
         public void Convert(IEntityConverter converter)
         {
-            converter.AddComponent(new AimLine
+            converter.AddComponent(new AimLineComponent
             {
                 AimLineRenderer = LineRenderer
             });

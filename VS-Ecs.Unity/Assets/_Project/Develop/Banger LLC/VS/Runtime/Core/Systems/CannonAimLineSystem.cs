@@ -53,7 +53,7 @@ namespace VS.Runtime.Core.Systems
         {
             base.Update(in state);
             _deltaTime = state.DeltaTime;
-            RefreshLineRenderer(_deltaTime);
+            AnimateLineRenderer(_deltaTime);
         }
 
         private void SpawnAimLine() => 
@@ -61,14 +61,14 @@ namespace VS.Runtime.Core.Systems
 
         private void CacheValues()
         {
-            var query = new QueryDescription().WithAll<Cannon>();
-            World.Query(in query, (ref Cannon cannon) =>
+            var query = new QueryDescription().WithAll<CannonComponent>();
+            World.Query(in query, (ref CannonComponent cannon) =>
             {
                 _aimLineRoot = cannon.AimLineRoot;
             });
         }
 
-        private void RefreshLineRenderer(float deltaTime)
+        private void AnimateLineRenderer(float deltaTime)
         {
             float yOffset = Mathf.Repeat(deltaTime * 0.5f, 1f);
             _aimLineRenderer.material.SetTextureOffset(MainTex, new Vector2(1, yOffset));

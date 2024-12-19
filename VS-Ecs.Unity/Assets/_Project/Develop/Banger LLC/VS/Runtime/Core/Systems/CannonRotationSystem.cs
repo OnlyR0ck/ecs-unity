@@ -24,9 +24,9 @@ namespace VS.Runtime.Core.Systems
 
         private void OnDrag_Handler(Vector2 position)
         {
-            var query = new QueryDescription().WithAll<Cannon, RotationComponent, TransformComponent>();
+            var query = new QueryDescription().WithAll<CannonComponent, RotationComponent, TransformComponent>();
             
-            World.Query(in query, (ref Cannon _, ref RotationComponent rotation, ref TransformComponent root) =>
+            World.Query(in query, (ref CannonComponent _, ref RotationComponent rotation, ref TransformComponent root) =>
             {
                 Vector3 direction = ((Vector3)position - root.Transform.position).normalized;
                 direction.z = 0;

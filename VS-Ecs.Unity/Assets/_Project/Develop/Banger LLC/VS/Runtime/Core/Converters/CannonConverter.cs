@@ -11,7 +11,7 @@ namespace VS.Runtime.Core.Converters
         
         public void Convert(IEntityConverter converter)
         {
-            converter.AddComponent(new Cannon
+            converter.AddComponent(new CannonComponent
             {
                 BulletSpawnRoot = BulletSpawnTransform,
                 AimLineRoot = AimLineRoot

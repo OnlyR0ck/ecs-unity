@@ -7,7 +7,8 @@
         "UniTask",
         "VContainer",
         "Stateless",
-        "Arch.Unity"
+        "Arch.Unity",
+        "Pool"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
