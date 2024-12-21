@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38cab11c75c6474caae0da96240c55e7, type: 3}
   m_Name: ResourcesContainer
   m_EditorClassIdentifier: 
+  <Bubble>k__BackingField: {fileID: 7502581306996589269, guid: 93a6ff5e4384b4c77a0ddb16866bfc9c, type: 3}
   <Cube>k__BackingField: {fileID: 1139605896565445702, guid: 7b65ea1ec01964366bb5b10fea289322, type: 3}
   <AimLine>k__BackingField: {fileID: 5778765242226811497, guid: 4fc8cfcd545b24f14aee182d41666995, type: 3}

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using Arch.Core;
+using Arch.Core.Extensions;
+using Arch.Unity.Conversion;
 using Arch.Unity.Toolkit;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,6 +11,7 @@ using VS.Pool.Interfaces;
 using VS.Runtime.Core.Components;
 using VS.Runtime.Core.Constants;
 using VS.Runtime.Core.Views;
+using VS.Runtime.Test;
 using VS.Runtime.Utilities;
 
 namespace VS.Runtime.Core.Systems
@@ -21,12 +24,14 @@ namespace VS.Runtime.Core.Systems
         private Transform _aimLineRoot;
         private readonly RaycastHit2D[] _hits = new RaycastHit2D[1];
         private readonly ShootingConfig _config;
+        private readonly BubbleView _bubblePrefab;
 
-        public CannonShootSystem(World world, IInputService inputService, ShootingConfig config, IPoolContainer container) : base(world)
+        public CannonShootSystem(World world, IInputService inputService, ShootingConfig config, IPoolContainer container, ResourcesContainer resourcesContainer) : base(world)
         {
             _config = config;
             _inputService = inputService;
             _pool = container.GetPool(PoolsID.Level);
+            _bubblePrefab = resourcesContainer.Bubble;
         }
 
         public override void Initialize()
@@ -53,12 +58,13 @@ namespace VS.Runtime.Core.Systems
             if (!IsAllowedToShoot())
                 return;
             
-            var view = _pool.Get<BubbleView>(LevelPoolIDs.BubbleID, null, _bulletSpawnRoot.position);
+            //var view = _pool.Get<BubbleView>(LevelPoolIDs.BubbleID, nulxl, _bulletSpawnRoot.position);
+            var view = Object.Instantiate(_bubblePrefab, _bulletSpawnRoot.position, Quaternion.identity);
             GetCollisionPoints(out var points);
-            World.Create(view, new PathComponent
+            if (EntityConversion.TryGetEntity(view.gameObject, out EntityReference entity))
             {
-                Points = points.ToArray()
-            }, new AutoDestroyComponent());
+                World.Add(entity, new PathComponent(points.ToArray()), new AutoDestroyComponent());
+            }
         }
         
         private void GetCollisionPoints(out List<Vector3> collisionPoints)

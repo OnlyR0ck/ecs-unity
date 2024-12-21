@@ -25,7 +25,7 @@ namespace VS.Runtime.Test
             base.Configure(builder);
 
             _poolsContainer.Init();
-            _poolsContainer.PrePool();
+            //_poolsContainer.PrePool();
             
             builder.RegisterInstance(_resourcesContainer);
             builder.RegisterInstance(_shootingConfig);
@@ -40,6 +40,7 @@ namespace VS.Runtime.Test
                 systems.Add<CannonAimLineSystem>();
                 systems.Add<CannonShootSystem>();
                 systems.Add<MoveAlongPathSystem>();
+                systems.Add<CleanUpSystem>();
             });
         }
     }

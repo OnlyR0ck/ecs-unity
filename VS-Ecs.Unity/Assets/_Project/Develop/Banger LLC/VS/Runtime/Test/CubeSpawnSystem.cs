@@ -21,7 +21,7 @@ namespace VS.Runtime.Test
         {
             base.Initialize();
             var cube = Object.Instantiate(_resourcesContainer.Cube);
-            World.Create(cube);
+            World.Create(_resourcesContainer.Cube);
         }
     }
 }

@@ -62,7 +62,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   options:
     conversionMode: 1
-    convertHybridComponents: 1
+    convertHybridComponents: 0
     useDisabledComponent: 0
 --- !u!114 &7502581306996589269
 MonoBehaviour:

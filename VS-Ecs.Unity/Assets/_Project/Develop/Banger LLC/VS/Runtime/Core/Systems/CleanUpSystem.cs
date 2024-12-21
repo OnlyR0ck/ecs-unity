@@ -1,7 +1,10 @@
 using System.Collections.Generic;
+using Arch.Buffer;
 using Arch.Core;
+using Arch.System;
 using Arch.Unity.Conversion;
 using Arch.Unity.Toolkit;
+using UnityEngine;
 using VS.Pool;
 using VS.Pool.Interfaces;
 using VS.Runtime.Core.Components;
@@ -13,6 +16,7 @@ namespace VS.Runtime.Core.Systems
     {
         private readonly List<(Entity Entity, AutoDestroyComponent Component)> _toDestroy = new();
         private readonly IPool _pool;
+        private readonly CommandBuffer _buffer = new(); 
 
         public CleanUpSystem(World world, IPoolContainer poolContainer) : base(world)
         {
@@ -31,23 +35,31 @@ namespace VS.Runtime.Core.Systems
         public override void Update(in SystemState t)
         {
             base.Update(in t);
-            for (int i = _toDestroy.Count - 1; i >= 0; --i)
+            var query = new QueryDescription().WithAll<AutoDestroyComponent>();
+            var state = t;
+            World.Query(in query, (ref Entity entity, ref AutoDestroyComponent component) =>
             {
-                _toDestroy[i].Component.TimeToDestroy -= t.DeltaTime;
-                if (_toDestroy[i].Component.TimeToDestroy > 0)
-                    continue;
-
-                if (EntityConversion.TryGetGameObject(_toDestroy[i].Entity, out var gameObject))
+                component.TimeToDestroy -= state.DeltaTime;
+                if (component.TimeToDestroy <= 0)
                 {
-                    if (gameObject.TryGetComponent(out PoolObject view))
-                    {
-                        _pool.Release(view);
-                    }
-                }
-
-                World.Remove<Entity>(_toDestroy[i].Entity);
-                _toDestroy.RemoveAt(i);
-            }
+                    _buffer.Destroy(entity);
+                    //World.Destroy(entity);
+                } 
+            });
+            
+            
+            _buffer.Playback(World);
         }
+
+        /*[Query]
+        public void CleanUp([Data] in float dt, in Entity entity, ref AutoDestroyComponent component)
+        {
+            component.TimeToDestroy -= dt;
+            if (component.TimeToDestroy <= 0)
+            {
+                World.Destroy(entity);
+            }
+        }*/
+
     }
 }
