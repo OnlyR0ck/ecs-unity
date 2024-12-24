@@ -1,5 +1,4 @@
-using Arch.Unity;
-using Arch.Unity.Conversion;
+using DCFApixels.DragonECS;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -19,11 +18,11 @@ namespace VS.Runtime.Test
         [SerializeField] private ShootingConfig _shootingConfig;
         [SerializeField] private InputHandlerService _inputHandler;
         [SerializeField] private CoreGameSceneRefs _refs;
-        
+
         protected override void Configure(IContainerBuilder builder)
         {
             base.Configure(builder);
-
+            
             _poolsContainer.Init();
             //_poolsContainer.PrePool();
             
@@ -33,15 +32,8 @@ namespace VS.Runtime.Test
             builder.RegisterInstance(_inputHandler);
             builder.RegisterInstance(_refs);
             builder.Register<InputService>(Lifetime.Singleton).AsImplementedInterfaces();
-            builder.UseNewArchApp(Lifetime.Scoped, EntityConversion.DefaultWorld, systems =>
-            {
-                systems.Add<CubeSpawnSystem>();
-                systems.Add<CannonRotationSystem>();
-                systems.Add<CannonAimLineSystem>();
-                systems.Add<CannonShootSystem>();
-                systems.Add<MoveAlongPathSystem>();
-                systems.Add<CleanUpSystem>();
-            });
+            builder.RegisterInstance(new EcsDefaultWorld()).AsSelf();
+            builder.RegisterEntryPoint<EcsRoot>().AsImplementedInterfaces();
         }
     }
 }

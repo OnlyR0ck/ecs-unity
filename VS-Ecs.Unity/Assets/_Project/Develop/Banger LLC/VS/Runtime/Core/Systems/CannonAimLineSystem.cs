@@ -1,6 +1,5 @@
 using System.Collections.Generic;
-using Arch.Core;
-using Arch.Unity.Toolkit;
+using DCFApixels.DragonECS;
 using UnityEngine;
 using VS.Core.Configs.Features;
 using VS.Runtime.Core.Components;
@@ -11,8 +10,13 @@ using Object = UnityEngine.Object;
 
 namespace VS.Runtime.Core.Systems
 {
-    public class CannonAimLineSystem : UnitySystemBase
+    public class CannonAimLineSystem : IEcsInit, IEcsDestroy, IEcsRun
     {
+        private class CannonAspect : EcsAspect
+        {
+            public EcsPool<CannonComponent> Cannons = Inc;
+        }
+        
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
         private readonly RaycastHit2D[] _hits = new RaycastHit2D[1];
         private readonly IInputService _inputService;
@@ -21,16 +25,17 @@ namespace VS.Runtime.Core.Systems
         private LineRenderer _aimLineRenderer;
         private Transform _aimLineRoot;
         private float _deltaTime;
+        private readonly EcsDefaultWorld _world;
 
-
-        public CannonAimLineSystem(World world, IInputService inputService, ShootingConfig config, ResourcesContainer resources) : base(world)
+        public CannonAimLineSystem(EcsDefaultWorld world, IInputService inputService, ShootingConfig config, ResourcesContainer resources) : base(world)
         {
+            _world = world;
             _config = config;
             _inputService = inputService;
             _aimLinePrefab = resources.AimLine;
         }
 
-        public override void Initialize()
+        public void Init()
         {
             _inputService.OnStartDrag += OnStartDrag_Handler;
             _inputService.OnEndDrag += OnEndDrag_Handler;
@@ -42,17 +47,16 @@ namespace VS.Runtime.Core.Systems
             _aimLineRoot.gameObject.SetActive(false);
         }
 
-        public override void Dispose()
+        public void Destroy()
         {
             _inputService.OnStartDrag -= OnStartDrag_Handler;
             _inputService.OnEndDrag -= OnEndDrag_Handler;
             _inputService.OnDrag -= OnDrag_Handler;
         }
 
-        public override void Update(in SystemState state)
+        public void Run()
         {
-            base.Update(in state);
-            _deltaTime = state.DeltaTime;
+            _deltaTime = Time.deltaTime;
             AnimateLineRenderer(_deltaTime);
         }
 
@@ -61,11 +65,11 @@ namespace VS.Runtime.Core.Systems
 
         private void CacheValues()
         {
-            var query = new QueryDescription().WithAll<CannonComponent>();
-            World.Query(in query, (ref CannonComponent cannon) =>
+            foreach (int entity in _world.Where(out CannonAspect cannonComponent))
             {
-                _aimLineRoot = cannon.AimLineRoot;
-            });
+                _aimLineRoot = cannonComponent.Cannons.Get(entity).AimLineRoot;
+                break;
+            }
         }
 
         private void AnimateLineRenderer(float deltaTime)
@@ -73,7 +77,7 @@ namespace VS.Runtime.Core.Systems
             float yOffset = Mathf.Repeat(deltaTime * 0.5f, 1f);
             _aimLineRenderer.material.SetTextureOffset(MainTex, new Vector2(1, yOffset));
         }
-        
+
         private void RecalculateAimLineDotsPositions()
         {
             Vector2 direction = _aimLineRoot.up; 

@@ -1,6 +1,4 @@
-﻿using Arch.Core;
-using Arch.Core.Utils;
-using VContainer.Unity;
+﻿using VContainer.Unity;
 using VS.Runtime.Utilities;
 
 namespace VS.Runtime.Core
@@ -18,8 +16,7 @@ namespace VS.Runtime.Core
 
         public async void Start()
         {
-            World world = World.Create();
-            world.Create();
+            
         }
     }
 }

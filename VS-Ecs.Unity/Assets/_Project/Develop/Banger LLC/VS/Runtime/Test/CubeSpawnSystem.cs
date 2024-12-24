@@ -1,15 +1,17 @@
-using Arch.Core;
-using Arch.Unity;
-using Arch.Unity.Toolkit;
+using DCFApixels.DragonECS;
 using UnityEngine;
 using VContainer;
 
 namespace VS.Runtime.Test
 {
-    public class CubeSpawnSystem : UnitySystemBase
+    public class CubeSpawnSystem : IEcsInit
     {
         private ResourcesContainer _resourcesContainer;
-        public CubeSpawnSystem(World world) : base(world) { }
+        private readonly EcsDefaultWorld _world;
+        public CubeSpawnSystem(EcsDefaultWorld world)
+        {
+            _world = world;
+        }
 
         [Inject]
         private void Construct(ResourcesContainer resourcesContainer)
@@ -17,11 +19,10 @@ namespace VS.Runtime.Test
             _resourcesContainer = resourcesContainer;
         }
 
-        public override void Initialize()
+        public void Init()
         {
-            base.Initialize();
             var cube = Object.Instantiate(_resourcesContainer.Cube);
-            World.Create(_resourcesContainer.Cube);
+            _world.Add(_resourcesContainer.Cube);
         }
     }
 }
