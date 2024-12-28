@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5458877368546766943}
-  - component: {fileID: 5153980948375401248}
-  - component: {fileID: 6896191972016918421}
   - component: {fileID: 7502581306996589269}
+  - component: {fileID: 6053879542062540003}
+  - component: {fileID: 4291850533845751098}
   m_Layer: 0
   m_Name: Bubble
   m_TagString: Untagged
@@ -35,35 +35,6 @@ Transform:
   - {fileID: 7172952825620651340}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5153980948375401248
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1806039190858939217}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ae288c9b5ff4477b8d730ef1d642a9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <Transform>k__BackingField: {fileID: 5458877368546766943}
---- !u!114 &6896191972016918421
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1806039190858939217}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0134bd735ff2b4ad5b8f57e6a38f2557, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  options:
-    conversionMode: 1
-    convertHybridComponents: 0
-    useDisabledComponent: 0
 --- !u!114 &7502581306996589269
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77,6 +48,44 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _id: Bubble
+--- !u!114 &6053879542062540003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1806039190858939217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 495156623a7b1e94087f916ba42745e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _deleteEntityWithDestroy: 1
+  _scriptableTemplates: []
+  _monoTemplates: []
+--- !u!114 &4291850533845751098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1806039190858939217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 351338ca92ace49499f450172d857af6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _components:
+  - rid: 4452740169440690178
+  references:
+    version: 2
+    RefIds:
+    - rid: 4452740169440690178
+      type: {class: UnityComponentTransformTemplate, ns: DCFApixels.DragonECS, asm: DCFApixels.DragonECS.Unity}
+      data:
+        component:
+          obj: {fileID: 5458877368546766943}
+        _offset: 0
 --- !u!1 &7164714234004695792
 GameObject:
   m_ObjectHideFlags: 0

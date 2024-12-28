@@ -7,10 +7,16 @@
         "UniTask",
         "VContainer",
         "Stateless",
-        "Arch.Unity",
-        "Pool"
+        "Pool",
+        "DCFApixels.DragonECS.Unity",
+        "DCFApixels.DragonECS",
+        "DCFApixels.DragonECS.AutoInjections",
+        "DCFApixels.DragonECS.Threads"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Android",
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

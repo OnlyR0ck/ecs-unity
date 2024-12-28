@@ -9,10 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5961121087619354236}
-  - component: {fileID: 3468683187046165006}
-  - component: {fileID: 4849735711490775646}
-  - component: {fileID: 2545704256595230507}
-  - component: {fileID: 5801510300538887411}
+  - component: {fileID: 1862688490858689525}
+  - component: {fileID: 2977301977687214516}
   m_Layer: 0
   m_Name: Cannon
   m_TagString: Untagged
@@ -39,7 +37,7 @@ Transform:
   - {fileID: 2737990286781449270}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3468683187046165006
+--- !u!114 &1862688490858689525
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -48,12 +46,37 @@ MonoBehaviour:
   m_GameObject: {fileID: 1139605896565445702}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 101fdb4c915648ff952c82037120b636, type: 3}
+  m_Script: {fileID: 11500000, guid: 351338ca92ace49499f450172d857af6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <BulletSpawnTransform>k__BackingField: {fileID: 3393826937044403275}
-  <AimLineRoot>k__BackingField: {fileID: 2737990286781449270}
---- !u!114 &4849735711490775646
+  _components:
+  - rid: 4452740034774171648
+  - rid: 4452740169440690176
+  - rid: 4452740169440690345
+  references:
+    version: 2
+    RefIds:
+    - rid: 4452740034774171648
+      type: {class: UnityComponentTransformTemplate, ns: DCFApixels.DragonECS, asm: DCFApixels.DragonECS.Unity}
+      data:
+        component:
+          obj: {fileID: 5961121087619354236}
+        _offset: 0
+    - rid: 4452740169440690176
+      type: {class: CannonTemplate, ns: VS.Runtime.Core.Components, asm: UEPT.Runtime}
+      data:
+        component:
+          AimLineRoot: {fileID: 2737990286781449270}
+          BulletSpawnRoot: {fileID: 3393826937044403275}
+        _offset: 0
+    - rid: 4452740169440690345
+      type: {class: RotationComponentTemplate, ns: VS.Runtime.Core.Components, asm: UEPT.Runtime}
+      data:
+        component:
+          Speed: 5
+          FromTo: {x: -87, y: 87}
+        _offset: 0
+--- !u!114 &2977301977687214516
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -62,40 +85,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1139605896565445702}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ae288c9b5ff4477b8d730ef1d642a9a, type: 3}
+  m_Script: {fileID: 11500000, guid: 495156623a7b1e94087f916ba42745e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Transform>k__BackingField: {fileID: 5961121087619354236}
---- !u!114 &2545704256595230507
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1139605896565445702}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0134bd735ff2b4ad5b8f57e6a38f2557, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  options:
-    conversionMode: 1
-    convertHybridComponents: 1
-    useDisabledComponent: 0
---- !u!114 &5801510300538887411
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1139605896565445702}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e8fbeb522e44dd7a9f158e091494912, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <Speed>k__BackingField: 100
-  <FromTo>k__BackingField: {x: -87, y: 87}
+  _deleteEntityWithDestroy: 1
+  _scriptableTemplates: []
+  _monoTemplates:
+  - {fileID: 1862688490858689525}
 --- !u!1 &5634297431273673459
 GameObject:
   m_ObjectHideFlags: 0
