@@ -1,41 +1,45 @@
-using System.Collections.Generic;
-using Arch.Core;
-using Arch.System;
-using Arch.Unity.Toolkit;
-using UnityEngine;
+using DCFApixels.DragonECS;
 using VS.Runtime.Core.Components;
 
 namespace VS.Runtime.Core.Systems
 {
-    public class MoveAlongPathSystem : UnitySystemBase
+    public class MoveAlongPathSystem : IEcsInit, IEcsRun
     {
         private const float _defaultSpeed = 2.5f;
-        private List<(Entity Entity, PathComponent Path)> _toMove;
+        private EcsDefaultWorld _world;
 
-        public MoveAlongPathSystem(World world) : base(world) { }
-
-        public override void Initialize()
+        public MoveAlongPathSystem(EcsDefaultWorld world)
         {
-            base.Initialize();
-            World.SubscribeComponentAdded((in Entity entity, ref PathComponent path) =>
-            {
-                _toMove.Add((entity, path));
-            });
+            _world = world;
         }
 
-        [Query]
-        public void MoveAlongPath([Data] in float dt,in Entity entity, ref PathComponent path, ref TransformComponent transformComponent)
+        public void Initialize()
         {
-            if (transformComponent.Transform.position == path.Points[^1] || path.CurrentIndex >= path.Points.Length - 1)
+            
+        }
+
+        public void Init()
+        {
+            
+        }
+
+        public void Run()
+        {
+            
+        }
+
+        /*public void MoveAlongPath(float dt, ref PathComponent path, ref TransformComponent transformComponent)
+        {
+            /*if (transformComponent.Transform.position == path.Points[^1] || path.CurrentIndex >= path.Points.Length - 1)
             {
-                World.Remove<PathComponent>(entity);
+                _world.(path);
                 return;
             }
 
             var direction = (path.Points[path.CurrentIndex + 1] - path.Points[path.CurrentIndex]).normalized;
             transformComponent.Transform.position += direction * _defaultSpeed * dt;
             if ((transformComponent.Transform.position - path.Points[path.CurrentIndex]).sqrMagnitude < Mathf.Epsilon)
-                path.CurrentIndex++;
-        }
+                path.CurrentIndex++;#1#
+        }*/
     }
 }

@@ -12,7 +12,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "5338babb32f576dd301eb33b9c9ecd85651bf728"
+      "hash": "6eacc3e4897b479584de47db4be2a8bd9f2dacbc"
     },
     "com.dcfa_pixels.dragonecs-auto_injections": {
       "version": "https://github.com/DCFApixels/DragonECS-AutoInjections.git",

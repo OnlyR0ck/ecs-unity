@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5458877368546766943}
   - component: {fileID: 5778765242226811497}
+  - component: {fileID: 949214033719727633}
+  - component: {fileID: 6900972663758911454}
   m_Layer: 0
   m_Name: AimLine
   m_TagString: Untagged
@@ -136,3 +138,42 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &949214033719727633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1806039190858939217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 351338ca92ace49499f450172d857af6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _components:
+  - rid: 4452740169440690177
+  references:
+    version: 2
+    RefIds:
+    - rid: 4452740169440690177
+      type: {class: AimLineTemplate, ns: VS.Runtime.Core.Components, asm: UEPT.Runtime}
+      data:
+        component:
+          AimLineRenderer: {fileID: 5778765242226811497}
+        _offset: 0
+--- !u!114 &6900972663758911454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1806039190858939217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 495156623a7b1e94087f916ba42745e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _deleteEntityWithDestroy: 0
+  _scriptableTemplates: []
+  _monoTemplates:
+  - {fileID: 949214033719727633}

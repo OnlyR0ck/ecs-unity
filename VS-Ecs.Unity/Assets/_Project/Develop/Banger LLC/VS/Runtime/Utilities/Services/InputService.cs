@@ -46,6 +46,7 @@ namespace VS.Runtime.Utilities
             
             _cts?.Cancel();
             _cts?.Dispose();
+            _cts = null;
         }
 
         private void HandlePointerDown(PointerEventData eventData)
@@ -82,6 +83,7 @@ namespace VS.Runtime.Utilities
             OnEndDrag?.Invoke(GetWorldPosition(eventData.position));
             _cts?.Cancel();
             _cts?.Dispose();
+            _cts = null;
         }
 
         private Vector3 GetWorldPosition(Vector2 position) => 

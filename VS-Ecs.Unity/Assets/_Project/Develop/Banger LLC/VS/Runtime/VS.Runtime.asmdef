@@ -14,6 +14,7 @@
         "DCFApixels.DragonECS.Threads"
     ],
     "includePlatforms": [
+        "Android",
         "Editor"
     ],
     "excludePlatforms": [],

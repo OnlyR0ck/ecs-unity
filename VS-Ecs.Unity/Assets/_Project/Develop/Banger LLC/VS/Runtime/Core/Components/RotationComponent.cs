@@ -1,11 +1,14 @@
+using System;
+using DCFApixels.DragonECS;
 using UnityEngine;
 
 namespace VS.Runtime.Core.Components
 {
-    public struct RotationComponent
+    [Serializable]
+    public struct RotationComponent : IEcsComponent
     {
-        public readonly float Speed;
-        public readonly Vector2 FromTo;
+        public float Speed;
+        public Vector2 FromTo;
 
         public RotationComponent(float speed, Vector2 fromTo)
         {
@@ -13,4 +16,6 @@ namespace VS.Runtime.Core.Components
             FromTo = fromTo;
         }
     }
+    
+    public class RotationComponentTemplate : ComponentTemplate<RotationComponent> {}
 }

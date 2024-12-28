@@ -10,24 +10,37 @@ using Object = UnityEngine.Object;
 
 namespace VS.Runtime.Core.Systems
 {
-    public class CannonAimLineSystem : IEcsInit, IEcsDestroy, IEcsRun
+    public sealed class CannonAimLineSystem : IEcsInit, IEcsDestroy, IEcsRun
     {
-        private class CannonAspect : EcsAspect
+        #if ENABLE_IL2CPP
+        [Il2CppSetOption(Option.NullChecks, false)]
+        [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+        #endif
+        private sealed class CannonAspect : EcsAspect
         {
             public EcsPool<CannonComponent> Cannons = Inc;
+        }
+
+        #if ENABLE_IL2CPP
+        [Il2CppSetOption(Option.NullChecks, false)]
+        [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+        #endif
+        private class AimLineAspect : EcsAspect
+        {
+            public EcsPool<AimLineComponent> AimLines = Inc;
         }
         
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
         private readonly RaycastHit2D[] _hits = new RaycastHit2D[1];
         private readonly IInputService _inputService;
-        private readonly LineRenderer _aimLinePrefab;
+        private readonly EcsEntityConnect _aimLinePrefab;
         private readonly ShootingConfig _config;
         private LineRenderer _aimLineRenderer;
         private Transform _aimLineRoot;
         private float _deltaTime;
         private readonly EcsDefaultWorld _world;
 
-        public CannonAimLineSystem(EcsDefaultWorld world, IInputService inputService, ShootingConfig config, ResourcesContainer resources) : base(world)
+        public CannonAimLineSystem(EcsDefaultWorld world, IInputService inputService, ShootingConfig config, ResourcesContainer resources)
         {
             _world = world;
             _config = config;
@@ -40,10 +53,10 @@ namespace VS.Runtime.Core.Systems
             _inputService.OnStartDrag += OnStartDrag_Handler;
             _inputService.OnEndDrag += OnEndDrag_Handler;
             _inputService.OnDrag += OnDrag_Handler;
-            
+
             CacheValues();
             SpawnAimLine();
-            
+
             _aimLineRoot.gameObject.SetActive(false);
         }
 
@@ -60,16 +73,18 @@ namespace VS.Runtime.Core.Systems
             AnimateLineRenderer(_deltaTime);
         }
 
-        private void SpawnAimLine() => 
-            _aimLineRenderer = Object.Instantiate(_aimLinePrefab, _aimLineRoot, false);
+        private void SpawnAimLine()
+        {
+            EcsEntityConnect connect = Object.Instantiate(_aimLinePrefab, _aimLineRoot, false);
+            entlong entity = _world.NewEntityLong();
+            connect.ConnectWith(entity, true);
+            _aimLineRenderer = connect.GetComponent<LineRenderer>();
+        }
 
         private void CacheValues()
         {
-            foreach (int entity in _world.Where(out CannonAspect cannonComponent))
-            {
-                _aimLineRoot = cannonComponent.Cannons.Get(entity).AimLineRoot;
-                break;
-            }
+            int cannonEntity = _world.Where(out CannonAspect cannonAspect).First();
+            _aimLineRoot = cannonAspect.Cannons.Get(cannonEntity).AimLineRoot;
         }
 
         private void AnimateLineRenderer(float deltaTime)

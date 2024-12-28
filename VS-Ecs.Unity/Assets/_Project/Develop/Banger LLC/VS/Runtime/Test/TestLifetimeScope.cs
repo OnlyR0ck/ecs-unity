@@ -32,8 +32,8 @@ namespace VS.Runtime.Test
             builder.RegisterInstance(_inputHandler);
             builder.RegisterInstance(_refs);
             builder.Register<InputService>(Lifetime.Singleton).AsImplementedInterfaces();
-            builder.RegisterInstance(new EcsDefaultWorld()).AsSelf();
-            builder.RegisterEntryPoint<EcsRoot>().AsImplementedInterfaces();
+            builder.RegisterInstance(new EcsDefaultWorld());
+            builder.RegisterEntryPoint<EcsRoot>();
         }
     }
 }

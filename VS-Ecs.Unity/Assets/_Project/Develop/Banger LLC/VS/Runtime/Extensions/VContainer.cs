@@ -4,7 +4,7 @@ namespace VS.Runtime.Extensions
 {
     public static class VContainer
     {
-        public static T Instantiate<T>(this IObjectResolver resolver, Lifetime lifetime = Lifetime.Singleton, params object[] args)
+        public static T Instantiate<T>(this IObjectResolver resolver, Lifetime lifetime, params object[] args)
         {
             var registrationBuilder = new RegistrationBuilder(typeof(T), lifetime);
 
@@ -20,7 +20,7 @@ namespace VS.Runtime.Extensions
             return (T)resolver.Resolve(registration);
         }
         
-        public static T Instantiate<T>(this IObjectResolver resolver, Lifetime lifetime = Lifetime.Singleton)
+        public static T Instantiate<T>(this IObjectResolver resolver, Lifetime lifetime)
         {
             var registrationBuilder = new RegistrationBuilder(typeof(T), lifetime);
             Registration registration = registrationBuilder.Build();
