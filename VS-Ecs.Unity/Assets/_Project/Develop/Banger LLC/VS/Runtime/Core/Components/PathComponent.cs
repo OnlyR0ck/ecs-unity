@@ -1,16 +1,16 @@
+using DCFApixels.DragonECS;
 using UnityEngine;
 
 namespace VS.Runtime.Core.Components
 {
-    public struct PathComponent
+    public struct PathComponent : IEcsComponent
     {
-        public readonly Vector3[] Points;
+        public Vector3[] Points;
         public int CurrentIndex;
+    }
 
-        public PathComponent(Vector3[] points)
-        {
-            Points = points;
-            CurrentIndex = 0;
-        }
+    public class PathComponentTemplate : ComponentTemplate<PathComponent>
+    {
+        
     }
 }

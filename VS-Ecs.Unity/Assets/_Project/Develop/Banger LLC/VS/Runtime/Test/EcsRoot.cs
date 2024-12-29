@@ -28,6 +28,8 @@ namespace VS.Runtime.Test
             //I'm registering systems as transient to prevent access from one system to another
             builder.Inject(_world)
                 .Add(_objectResolver.Instantiate<CannonModule>(Lifetime.Transient))
+                .Add(_objectResolver.Instantiate<MoveAlongPathSystem>(Lifetime.Transient))
+                .Add(_objectResolver.Instantiate<CleanUpSystem>(Lifetime.Transient))
                 /*.Add(_objectResolver.Instantiate<CannonAimLineSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<CannonShootSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<MoveAlongPathSystem>(Lifetime.Transient))

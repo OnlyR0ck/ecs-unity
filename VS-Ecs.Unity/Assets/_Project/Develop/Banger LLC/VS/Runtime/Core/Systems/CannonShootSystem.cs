@@ -26,6 +26,17 @@ namespace VS.Runtime.Core.Systems
         {
             public EcsPool<CannonComponent> Cannons = Inc;
         }
+
+        #if ENABLE_IL2CPP
+[Il2CppSetOption(Option.NullChecks, false)]
+[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+        #endif
+        private class ProjectileAspect : EcsAspect
+        {
+            public EcsPool<BubbleComponent> Bubbles = Inc;
+            public EcsPool<PathComponent> Paths = Opt;
+            public EcsPool<AutoDestroyComponent> AutoDestroyComponents = Opt;
+        }
         
         private readonly IInputService _inputService;
         private Transform _bulletSpawnRoot;
@@ -68,15 +79,22 @@ namespace VS.Runtime.Core.Systems
         {
             if (!IsAllowedToShoot())
                 return;
-            
+
             //var view = _pool.Get<BubbleView>(LevelPoolIDs.BubbleID, nulxl, _bulletSpawnRoot.position);
-            var view = Object.Instantiate(_bubblePrefab, _bulletSpawnRoot.position, Quaternion.identity);
+            var projectile = Object.Instantiate(_bubblePrefab, _bulletSpawnRoot.position, Quaternion.identity);
+            entlong projectileEntity = _world.NewEntityLong();
+            projectile.ConnectWith(projectileEntity, true);
+
             GetCollisionPoints(out var points);
-            
-            /*if (EntityConversion.TryGetEntity(view.gameObject, out EntityReference entity))
+
+            foreach (int entity in _world.Where(out ProjectileAspect aspect))
             {
-                World.Add(entity, new PathComponent(points.ToArray()), new AutoDestroyComponent());
-            }*/
+                ref PathComponent path = ref aspect.Paths.TryAddOrGet(entity);
+                path.Points = points.ToArray();
+
+                ref AutoDestroyComponent autoDestroy = ref aspect.AutoDestroyComponents.TryAddOrGet(entity);
+                autoDestroy.TimeToDestroy = 1;
+            }
         }
 
         private void GetCollisionPoints(out List<Vector3> collisionPoints)

@@ -1,45 +1,50 @@
 using DCFApixels.DragonECS;
+using UnityEngine;
+using VContainer;
 using VS.Runtime.Core.Components;
 
 namespace VS.Runtime.Core.Systems
 {
-    public class MoveAlongPathSystem : IEcsInit, IEcsRun
+    public class MoveAlongPathSystem : IEcsRun
     {
-        private const float _defaultSpeed = 2.5f;
-        private EcsDefaultWorld _world;
+        #if ENABLE_IL2CPP
+[Il2CppSetOption(Option.NullChecks, false)]
+[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+        #endif
+        private class Aspect : EcsAspect
+        {
+            public EcsPool<PathComponent> Objects = Inc;
+            public EcsPool<UnityComponent<Transform>> Transforms = Inc;
+        }
+        
+        private const float DefaultSpeed = 2.5f;
+        private readonly EcsDefaultWorld _world;
 
+        [Inject]
         public MoveAlongPathSystem(EcsDefaultWorld world)
         {
             _world = world;
         }
 
-        public void Initialize()
-        {
-            
-        }
-
-        public void Init()
-        {
-            
-        }
-
         public void Run()
         {
-            
-        }
-
-        /*public void MoveAlongPath(float dt, ref PathComponent path, ref TransformComponent transformComponent)
-        {
-            /*if (transformComponent.Transform.position == path.Points[^1] || path.CurrentIndex >= path.Points.Length - 1)
+            foreach (int entity in _world.Where(out Aspect aspect))
             {
-                _world.(path);
-                return;
-            }
+                Transform transform = aspect.Transforms.Get(entity).obj;
+                ref PathComponent path = ref aspect.Objects.Get(entity);
+                
+                if (transform.position == path.Points[^1] || path.CurrentIndex >= path.Points.Length - 1)
+                {
+                    aspect.Objects.Del(entity);
+                    return;
+                }
 
-            var direction = (path.Points[path.CurrentIndex + 1] - path.Points[path.CurrentIndex]).normalized;
-            transformComponent.Transform.position += direction * _defaultSpeed * dt;
-            if ((transformComponent.Transform.position - path.Points[path.CurrentIndex]).sqrMagnitude < Mathf.Epsilon)
-                path.CurrentIndex++;#1#
-        }*/
+                float dt = Time.deltaTime;
+                var direction = (path.Points[path.CurrentIndex + 1] - path.Points[path.CurrentIndex]).normalized;
+                transform.position += direction * DefaultSpeed * dt;
+                if ((transform.position - path.Points[path.CurrentIndex]).sqrMagnitude < Mathf.Epsilon)
+                    path.CurrentIndex++;
+            }
+        }
     }
 }

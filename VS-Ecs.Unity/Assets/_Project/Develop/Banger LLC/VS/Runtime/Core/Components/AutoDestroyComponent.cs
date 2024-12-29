@@ -1,6 +1,8 @@
+using DCFApixels.DragonECS;
+
 namespace VS.Runtime.Core.Components
 {
-    public struct AutoDestroyComponent
+    public struct AutoDestroyComponent : IEcsComponent
     {
         public float TimeToDestroy;
 

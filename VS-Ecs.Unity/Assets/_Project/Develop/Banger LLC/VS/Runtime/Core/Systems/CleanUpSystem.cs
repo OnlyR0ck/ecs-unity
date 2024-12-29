@@ -1,16 +1,30 @@
 using DCFApixels.DragonECS;
+using UnityEngine;
 using UnityEngine.Rendering;
+using VContainer;
 using VS.Pool;
 using VS.Pool.Interfaces;
+using VS.Runtime.Core.Components;
 
 namespace VS.Runtime.Core.Systems
 {
     public class CleanUpSystem : IEcsRun
     {
+        #if ENABLE_IL2CPP
+[Il2CppSetOption(Option.NullChecks, false)]
+[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+        #endif
+        private class Aspect : EcsAspect
+        {
+            public EcsPool<AutoDestroyComponent> Timers = Inc;
+            public EcsPool<GameObjectConnect> Connects = Inc;
+            
+        }
         private readonly IPool _pool;
         private readonly CommandBuffer _buffer = new();
-        private EcsDefaultWorld _world;
+        private readonly EcsDefaultWorld _world;
 
+        [Inject]
         public CleanUpSystem(EcsDefaultWorld world, IPoolContainer poolContainer)
         {
             _world = world;
@@ -19,16 +33,17 @@ namespace VS.Runtime.Core.Systems
         
         public void Run()
         {
-            /*var query = new QueryDescription().WithAll<AutoDestroyComponent>();
-            var state = t;
-            World.Query(in query, (ref Entity entity, ref AutoDestroyComponent component) =>
+            float deltaTime = Time.deltaTime;
+            foreach (int entity in _world.Where(out Aspect aspect))
             {
-                component.TimeToDestroy -= state.DeltaTime;
+                ref AutoDestroyComponent component = ref aspect.Timers.Get(entity);
                 if (component.TimeToDestroy <= 0)
                 {
-                    World.Destroy(entity);
-                } 
-            });*/
+                    _world.DelEntity(entity);
+                }
+
+                component.TimeToDestroy -= deltaTime;
+            }
         }
     }
 }
