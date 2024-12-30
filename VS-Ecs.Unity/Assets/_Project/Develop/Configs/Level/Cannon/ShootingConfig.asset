@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf879403e41f44099ef1696366f2b31e, type: 3}
+  m_Script: {fileID: 11500000, guid: 910445c78dce441e5ab7428767c7a76a, type: 3}
   m_Name: ShootingConfig
   m_EditorClassIdentifier: 
   <MaxReflections>k__BackingField: 5

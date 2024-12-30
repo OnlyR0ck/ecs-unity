@@ -8,5 +8,6 @@ namespace VS.Core.Configs.Features
         [field: SerializeField] public int MaxReflections { get; private set; } = 5;
         [field: SerializeField] public float CastOffset { get; private set; } = 0.1f;
         [field: SerializeField] public float CastDistance { get; private set; } = 100;
+        [field: SerializeField, Range(0.1f, 5)] public float ProjectileLifetimeDuration { get; private set; } = 3;
     }
 }

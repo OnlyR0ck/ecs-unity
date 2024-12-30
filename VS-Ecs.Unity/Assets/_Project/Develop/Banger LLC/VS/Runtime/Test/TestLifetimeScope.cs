@@ -14,7 +14,6 @@ namespace VS.Runtime.Test
     public class TestLifetimeScope : LifetimeScope
     {
         [SerializeField] private ResourcesContainer _resourcesContainer;
-        [SerializeField] private PoolsContainer _poolsContainer;
         [SerializeField] private ShootingConfig _shootingConfig;
         [SerializeField] private InputHandlerService _inputHandler;
         [SerializeField] private CoreGameSceneRefs _refs;
@@ -23,12 +22,11 @@ namespace VS.Runtime.Test
         {
             base.Configure(builder);
             
-            _poolsContainer.Init();
+            //_poolsContainer.Init();
             //_poolsContainer.PrePool();
             
             builder.RegisterInstance(_resourcesContainer);
             builder.RegisterInstance(_shootingConfig);
-            builder.RegisterInstance(_poolsContainer).As<IPoolContainer>();
             builder.RegisterInstance(_inputHandler);
             builder.RegisterInstance(_refs);
             builder.Register<InputService>(Lifetime.Singleton).AsImplementedInterfaces();

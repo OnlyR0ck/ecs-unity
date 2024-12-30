@@ -2,8 +2,6 @@ using DCFApixels.DragonECS;
 using UnityEngine;
 using UnityEngine.Rendering;
 using VContainer;
-using VS.Pool;
-using VS.Pool.Interfaces;
 using VS.Runtime.Core.Components;
 
 namespace VS.Runtime.Core.Systems
@@ -17,18 +15,16 @@ namespace VS.Runtime.Core.Systems
         private class Aspect : EcsAspect
         {
             public EcsPool<AutoDestroyComponent> Timers = Inc;
-            public EcsPool<GameObjectConnect> Connects = Inc;
+            public EcsPool<UnityComponent<Transform>> Transforms = Inc;
             
         }
-        private readonly IPool _pool;
         private readonly CommandBuffer _buffer = new();
         private readonly EcsDefaultWorld _world;
 
         [Inject]
-        public CleanUpSystem(EcsDefaultWorld world, IPoolContainer poolContainer)
+        public CleanUpSystem(EcsDefaultWorld world)
         {
             _world = world;
-            _pool = poolContainer.GetPool(PoolsID.Level);
         }
         
         public void Run()
@@ -37,9 +33,12 @@ namespace VS.Runtime.Core.Systems
             foreach (int entity in _world.Where(out Aspect aspect))
             {
                 ref AutoDestroyComponent component = ref aspect.Timers.Get(entity);
+                ref Transform transform = ref aspect.Transforms.Get(entity).obj;
                 if (component.TimeToDestroy <= 0)
                 {
-                    _world.DelEntity(entity);
+                    //_world.DelEntity(entity);
+                    Object.Destroy(transform.gameObject);
+                    continue;
                 }
 
                 component.TimeToDestroy -= deltaTime;

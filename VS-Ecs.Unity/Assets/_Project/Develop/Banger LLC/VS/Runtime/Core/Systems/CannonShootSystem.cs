@@ -2,11 +2,8 @@ using System.Collections.Generic;
 using DCFApixels.DragonECS;
 using UnityEngine;
 using VS.Core.Configs.Features;
-using VS.Pool;
-using VS.Pool.Interfaces;
 using VS.Runtime.Core.Components;
 using VS.Runtime.Core.Constants;
-using VS.Runtime.Core.Views;
 using VS.Runtime.Test;
 using VS.Runtime.Utilities;
 
@@ -28,34 +25,38 @@ namespace VS.Runtime.Core.Systems
         }
 
         #if ENABLE_IL2CPP
-[Il2CppSetOption(Option.NullChecks, false)]
-[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+        [Il2CppSetOption(Option.NullChecks, false)]
+        [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
         #endif
         private class ProjectileAspect : EcsAspect
         {
             public EcsPool<BubbleComponent> Bubbles = Inc;
-            public EcsPool<PathComponent> Paths = Opt;
-            public EcsPool<AutoDestroyComponent> AutoDestroyComponents = Opt;
+            public EcsPool<PathComponent> Paths = Exc;
+            public EcsPool<AutoDestroyComponent> AutoDestroyComponents = Exc;
         }
         
         private readonly IInputService _inputService;
         private Transform _bulletSpawnRoot;
-        private readonly IPool _pool;
         private Transform _aimLineRoot;
         private readonly RaycastHit2D[] _hits = new RaycastHit2D[1];
         private readonly ShootingConfig _config;
         private readonly EcsEntityConnect _bubblePrefab;
         private readonly EcsDefaultWorld _world;
 
-        public CannonShootSystem(EcsDefaultWorld world, IInputService inputService, ShootingConfig config, IPoolContainer container, ResourcesContainer resourcesContainer)
+        public CannonShootSystem
+        (
+            EcsDefaultWorld world,
+            IInputService inputService,
+            ShootingConfig config,
+            ResourcesContainer resourcesContainer
+        )
         {
             _world = world;
             _config = config;
             _inputService = inputService;
-            _pool = container.GetPool(PoolsID.Level);
             _bubblePrefab = resourcesContainer.Bubble;
         }
-        
+
 
         public void Init()
         {
@@ -79,8 +80,7 @@ namespace VS.Runtime.Core.Systems
         {
             if (!IsAllowedToShoot())
                 return;
-
-            //var view = _pool.Get<BubbleView>(LevelPoolIDs.BubbleID, nulxl, _bulletSpawnRoot.position);
+            
             var projectile = Object.Instantiate(_bubblePrefab, _bulletSpawnRoot.position, Quaternion.identity);
             entlong projectileEntity = _world.NewEntityLong();
             projectile.ConnectWith(projectileEntity, true);
@@ -93,7 +93,7 @@ namespace VS.Runtime.Core.Systems
                 path.Points = points.ToArray();
 
                 ref AutoDestroyComponent autoDestroy = ref aspect.AutoDestroyComponents.TryAddOrGet(entity);
-                autoDestroy.TimeToDestroy = 1;
+                autoDestroy.TimeToDestroy = _config.ProjectileLifetimeDuration;
             }
         }
 
@@ -130,6 +130,7 @@ namespace VS.Runtime.Core.Systems
             }
         }
 
+        //for now, it's always allowed
         private bool IsAllowedToShoot() => true;
     }
 }

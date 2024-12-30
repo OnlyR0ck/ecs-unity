@@ -2,6 +2,7 @@ using DCFApixels.DragonECS;
 using UnityEngine;
 using VContainer;
 using VS.Runtime.Core.Components;
+using VS.Runtime.Utilities.Logging;
 
 namespace VS.Runtime.Core.Systems
 {
@@ -17,7 +18,7 @@ namespace VS.Runtime.Core.Systems
             public EcsPool<UnityComponent<Transform>> Transforms = Inc;
         }
         
-        private const float DefaultSpeed = 2.5f;
+        private const float DefaultSpeed = 5f;
         private readonly EcsDefaultWorld _world;
 
         [Inject]
@@ -42,9 +43,19 @@ namespace VS.Runtime.Core.Systems
                 float dt = Time.deltaTime;
                 var direction = (path.Points[path.CurrentIndex + 1] - path.Points[path.CurrentIndex]).normalized;
                 transform.position += direction * DefaultSpeed * dt;
-                if ((transform.position - path.Points[path.CurrentIndex]).sqrMagnitude < Mathf.Epsilon)
+                if ((transform.position - path.Points[path.CurrentIndex + 1]).sqrMagnitude < Epsilon)
+                {
                     path.CurrentIndex++;
+                    CustomDebugLog.Log($"PATH: {path.CurrentIndex}");
+                }
+                else
+                {
+                    CustomDebugLog.Log(
+                        $"PATH: current pos: {transform.position}, path point {path.Points[path.CurrentIndex + 1]} ");
+                }
             }
         }
+
+        private const float Epsilon = 0.01f;
     }
 }
