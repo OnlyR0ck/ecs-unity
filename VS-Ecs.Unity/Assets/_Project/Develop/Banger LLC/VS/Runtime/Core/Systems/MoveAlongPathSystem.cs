@@ -2,6 +2,7 @@ using DCFApixels.DragonECS;
 using UnityEngine;
 using VContainer;
 using VS.Runtime.Core.Components;
+using VS.Runtime.Utilities.Debug;
 using VS.Runtime.Utilities.Logging;
 
 namespace VS.Runtime.Core.Systems
@@ -9,8 +10,8 @@ namespace VS.Runtime.Core.Systems
     public class MoveAlongPathSystem : IEcsRun
     {
         #if ENABLE_IL2CPP
-[Il2CppSetOption(Option.NullChecks, false)]
-[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+        [Il2CppSetOption(Option.NullChecks, false)]
+        [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
         #endif
         private class Aspect : EcsAspect
         {
@@ -43,16 +44,8 @@ namespace VS.Runtime.Core.Systems
                 float dt = Time.deltaTime;
                 var direction = (path.Points[path.CurrentIndex + 1] - path.Points[path.CurrentIndex]).normalized;
                 transform.position += direction * DefaultSpeed * dt;
-                if ((transform.position - path.Points[path.CurrentIndex + 1]).sqrMagnitude < Epsilon)
-                {
+                if ((transform.position - path.Points[path.CurrentIndex + 1]).sqrMagnitude < Epsilon) 
                     path.CurrentIndex++;
-                    CustomDebugLog.Log($"PATH: {path.CurrentIndex}");
-                }
-                else
-                {
-                    CustomDebugLog.Log(
-                        $"PATH: current pos: {transform.position}, path point {path.Points[path.CurrentIndex + 1]} ");
-                }
             }
         }
 

@@ -10,5 +10,7 @@ namespace VS.Runtime.Test
         [field: SerializeField] public EcsEntityConnect Bubble { get; private set; }
         [field: SerializeField] public EcsEntityConnect Cannon { get; private set; }
         [field: SerializeField] public EcsEntityConnect AimLine { get; private set; }
+        [field: SerializeField] public BubbleView BubbleCell { get; private set; }
+        [field: SerializeField] public GridView GridViewPrefab { get; private set; }
     }
 }

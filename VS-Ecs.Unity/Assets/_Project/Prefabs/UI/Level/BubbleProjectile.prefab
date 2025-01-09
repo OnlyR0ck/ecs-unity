@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 5458877368546766943}
   - component: {fileID: 6053879542062540003}
   - component: {fileID: 4291850533845751098}
-  - component: {fileID: 1658283607509092729}
+  - component: {fileID: 3523127277231877593}
   m_Layer: 0
-  m_Name: Bubble
+  m_Name: BubbleProjectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -80,9 +80,9 @@ MonoBehaviour:
       type: {class: BubbleComponentTemplate, ns: VS.Runtime.Core.Components, asm: UEPT.Runtime}
       data:
         component:
-          View: {fileID: 1658283607509092729}
+          View: {fileID: 3523127277231877593}
         _offset: 0
---- !u!114 &1658283607509092729
+--- !u!114 &3523127277231877593
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -91,7 +91,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1806039190858939217}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1dfe049d6cb834a6cac55464e6d7c45b, type: 3}
+  m_Script: {fileID: 11500000, guid: 02e0829168194ab4b5f1942c25173963, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _id: 

@@ -9,6 +9,4 @@ namespace VS.Runtime.Core.Components
     {
         public LineRenderer AimLineRenderer;
     }
-
-    public class AimLineTemplate : ComponentTemplate<AimLineComponent> { }
 }

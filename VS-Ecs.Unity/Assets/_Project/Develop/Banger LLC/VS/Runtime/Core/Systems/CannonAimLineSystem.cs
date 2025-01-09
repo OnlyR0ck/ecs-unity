@@ -99,8 +99,7 @@ namespace VS.Runtime.Core.Systems
             Vector2 origin = _aimLineRoot.position;
 
             int maxReflections = 5;
-            List<Vector3> collisionPoints = new List<Vector3>();
-            collisionPoints.Add(origin);
+            List<Vector3> collisionPoints = new List<Vector3> { origin };
 
             int currentReflection = 0;
 
