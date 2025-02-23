@@ -15,7 +15,7 @@ namespace VS.Runtime.Core.Systems
         #endif
         private class Aspect : EcsAspect
         {
-            public EcsPool<PathComponent> Objects = Inc;
+            public EcsPool<Path> Objects = Inc;
             public EcsPool<UnityComponent<Transform>> Transforms = Inc;
         }
         
@@ -33,10 +33,11 @@ namespace VS.Runtime.Core.Systems
             foreach (int entity in _world.Where(out Aspect aspect))
             {
                 Transform transform = aspect.Transforms.Get(entity).obj;
-                ref PathComponent path = ref aspect.Objects.Get(entity);
+                ref Path path = ref aspect.Objects.Get(entity);
                 
-                if (transform.position == path.Points[^1] || path.CurrentIndex >= path.Points.Length - 1)
+                if (path.CurrentIndex >= path.Points.Length - 1)
                 {
+                    transform.position = path.Points[^1];
                     aspect.Objects.Del(entity);
                     return;
                 }

@@ -1,15 +1,14 @@
+using VS.Runtime.Services.Grid;
+using VS.Runtime.Services.Input;
 using DCFApixels.DragonECS;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 using VS.Core.Configs.Features;
-using VS.Pool.Container;
-using VS.Pool.Interfaces;
 using VS.Runtime.Core.Infrastructure;
 using VS.Runtime.Core.Interfaces;
-using VS.Runtime.Core.Systems;
 using VS.Runtime.Core.Views;
-using VS.Runtime.Utilities;
+using VS.Runtime.Core.Models;
 
 namespace VS.Runtime.Test
 {
@@ -35,7 +34,9 @@ namespace VS.Runtime.Test
             builder.RegisterInstance(_inputHandler);
             builder.RegisterInstance(_refs).As<ICoreGameSceneRefs>();
             builder.RegisterInstance(_levelView).As<ILevel>();
+            builder.Register<GridModel>(Lifetime.Singleton);
             builder.Register<InputService>(Lifetime.Singleton).AsImplementedInterfaces();
+            builder.Register<GridParamsService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.RegisterInstance(new EcsDefaultWorld());
             builder.RegisterEntryPoint<EcsRoot>();
         }

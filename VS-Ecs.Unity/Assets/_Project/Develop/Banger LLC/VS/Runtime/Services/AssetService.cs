@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace VS.Runtime.Utilities
+namespace VS.Runtime.Services
 {
     public static class AssetService
     {

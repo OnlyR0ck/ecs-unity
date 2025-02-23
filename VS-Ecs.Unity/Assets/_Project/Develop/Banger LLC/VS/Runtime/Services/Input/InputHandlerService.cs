@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace VS.Runtime.Utilities
+namespace VS.Runtime.Services.Input
 {
     public class InputHandlerService : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler, IInputHandlerService
     {

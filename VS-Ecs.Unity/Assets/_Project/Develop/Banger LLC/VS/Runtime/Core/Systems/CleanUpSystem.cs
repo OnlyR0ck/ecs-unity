@@ -14,7 +14,7 @@ namespace VS.Runtime.Core.Systems
         #endif
         private class Aspect : EcsAspect
         {
-            public EcsPool<AutoDestroyComponent> Timers = Inc;
+            public EcsPool<AutoDestroy> Timers = Inc;
             public EcsPool<UnityComponent<Transform>> Transforms = Inc;
             
         }
@@ -32,7 +32,7 @@ namespace VS.Runtime.Core.Systems
             float deltaTime = Time.deltaTime;
             foreach (int entity in _world.Where(out Aspect aspect))
             {
-                ref AutoDestroyComponent component = ref aspect.Timers.Get(entity);
+                ref AutoDestroy component = ref aspect.Timers.Get(entity);
                 ref Transform transform = ref aspect.Transforms.Get(entity).obj;
                 if (component.TimeToDestroy <= 0)
                 {

@@ -1,16 +1,17 @@
+using VS.Runtime.Services.Grid;
 using DCFApixels.DragonECS;
 using UnityEngine;
-using VS.Core.Configs.Features;
 using VS.Runtime.Core.Components;
 using VS.Runtime.Core.Enums;
 using VS.Runtime.Core.Infrastructure;
 using VS.Runtime.Core.Interfaces;
+using VS.Runtime.Core.Models;
 using VS.Runtime.Core.Views;
 using VS.Runtime.Test;
 
 namespace VS.Runtime.Core.Systems
 {
-    public class GridSpawnSystem : IEcsInit
+    public sealed class GridSpawnSystem : IEcsInit
     {
         #if ENABLE_IL2CPP
         [Il2CppSetOption(Option.NullChecks, false)]
@@ -18,29 +19,27 @@ namespace VS.Runtime.Core.Systems
         #endif
         private class GridAspect : EcsAspect
         {
-            public EcsPool<UnityComponent<Transform>> Transforms = Inc;
-            public EcsPool<GridComponent> Grids = Opt;
+            public EcsPool<GridComponent> Grids = Inc;
         }
         
         private readonly Transform _gridSpawnRoot;
-        private readonly GridSettingsConfig _config;
         private readonly EcsDefaultWorld _world;
         private readonly Camera _camera;
         private readonly GridView _gridViewPrefab;
+        private readonly GridParams _params;
+        private GridModel _gridModel;
 
-        public GridSpawnSystem(EcsDefaultWorld world, ILevel level, ICoreGameSceneRefs refs, GridSettingsConfig config, ResourcesContainer resourcesContainer)
+        public GridSpawnSystem(EcsDefaultWorld world, ILevel level, ICoreGameSceneRefs refs, ResourcesContainer resourcesContainer, IGridParamsService paramsService, GridModel gridModel)
         {
+            _gridModel = gridModel;
             _world = world;
-            _config = config;
             _gridSpawnRoot = level.GridSpawnRoot;
             _camera = refs.GameCamera;
             _gridViewPrefab = resourcesContainer.GridViewPrefab;
+            _params = paramsService.Params;
         }
         
-        public void Init()
-        {
-            SpawnGrid();
-        }
+        public void Init() => SpawnGrid();
 
         private void SpawnGrid()
         {
@@ -48,30 +47,29 @@ namespace VS.Runtime.Core.Systems
             gridView.Connector.ConnectWith(_world.NewEntityLong(), true);
 
             float height = _camera.orthographicSize * 2;
-            float width  = height * _camera.aspect;
-            Vector2 screenWorldSize = new Vector2(width, height);
             
-            CellView[,] views = new CellView[_config.Rows, _config.Columns];
-            float cellRadius = screenWorldSize.x / (_config.Columns + _config.OffsetColumns);
-            Vector2 cellSize = new Vector2(cellRadius, cellRadius);
+            CellView[,] views = new CellView[_params.Config.Rows, _params.Config.Columns];
+            Vector2 cellSize = _params.CellSize;
+            Vector2 startOffset = cellSize * _params.Config.StartOffset;
             
-            bool isEven = _config.StartIsEven;
-            Vector3 origin = _camera.ScreenToWorldPoint(Vector3.zero) + new Vector3(cellSize.x, height - cellSize.y);
-
+            bool isEven = _params.Config.StartIsEven;
+            Vector3 origin = _camera.ScreenToWorldPoint(Vector3.zero) +
+                             new Vector3(startOffset.x * _params.Config.StartOffset, height - startOffset.y);
             
-            for (int i = 0; i < _config.Rows; i++)
+            for (int i = 0; i < _params.Config.Rows; i++)
             {
                 float offsetX = isEven ? cellSize.x / 2 : 0;
-                for (int j = 0; j < _config.Columns; j++)
+                for (int j = 0; j < _params.Config.Columns; j++)
                 {
                     Vector2 position = origin + new Vector3(
                         offsetX + j * cellSize.x,
                         -i * cellSize.y
                     );
                     
-                    CellView cell = Object.Instantiate(_config.CellViewPrefab, position, Quaternion.identity);
+                    CellView cell = Object.Instantiate(_params.Config.CellViewPrefab, position, Quaternion.identity);
                     cell.SetCoord(new Vector2Int(i, j));
-                    cell.SetState(ECellState.Free);
+                    ECellState cellState = i < _params.Config.VisibleRows ? ECellState.Free : ECellState.NotAvailable;
+                    cell.SetState(cellState);
                     cell.transform.localScale = cellSize;
                     cell.transform.SetParent(gridView.GridSpawnRoot);
                     views[i, j] = cell;
@@ -82,8 +80,9 @@ namespace VS.Runtime.Core.Systems
             
             foreach (int entity in _world.Where(out GridAspect aspect))
             {
-                ref GridComponent grid = ref aspect.Grids.TryAddOrGet(entity);
-                grid.Grid = views;
+                ref GridComponent grid = ref aspect.Grids.Get(entity);
+                grid.Cells = views;
+                _gridModel.Initialize(ref grid);
             }
         }
     }

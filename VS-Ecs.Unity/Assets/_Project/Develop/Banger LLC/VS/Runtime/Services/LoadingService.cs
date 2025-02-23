@@ -5,7 +5,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using VS.Runtime.Utilities.Logging;
 
-namespace VS.Runtime.Utilities
+namespace VS.Runtime.Services
 {
     public interface IDisposableLoadUnit : ILoadUnit, IDisposable { }
 

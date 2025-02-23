@@ -6,5 +6,6 @@ namespace VS.Runtime.Core.Interfaces
     {
         Transform GridSpawnPoint { get; }
         Transform GridSpawnRoot { get; }
+        Transform CannonSpawnRoot { get; }
     }
 }

@@ -48,6 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _components:
   - rid: 3602272993347371008
+  - rid: 3602273153798111403
   references:
     version: 2
     RefIds:
@@ -56,6 +57,10 @@ MonoBehaviour:
       data:
         component:
           obj: {fileID: 408739347238278808}
+        _offset: 0
+    - rid: 3602273153798111403
+      type: {class: GridComponentTemplate, ns: VS.Runtime.Core.Components, asm: UEPT.Runtime}
+      data:
         _offset: 0
 --- !u!114 &1605122474264705650
 MonoBehaviour:

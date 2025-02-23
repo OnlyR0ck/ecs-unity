@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38cab11c75c6474caae0da96240c55e7, type: 3}
   m_Name: ResourcesContainer
   m_EditorClassIdentifier: 
-  <Bubble>k__BackingField: {fileID: 6053879542062540003, guid: 93a6ff5e4384b4c77a0ddb16866bfc9c, type: 3}
+  <Bubble>k__BackingField: {fileID: 3523127277231877593, guid: 93a6ff5e4384b4c77a0ddb16866bfc9c, type: 3}
   <Cannon>k__BackingField: {fileID: 2977301977687214516, guid: 7b65ea1ec01964366bb5b10fea289322, type: 3}
   <AimLine>k__BackingField: {fileID: 6900972663758911454, guid: 4fc8cfcd545b24f14aee182d41666995, type: 3}
   <BubbleCell>k__BackingField: {fileID: 3523127277231877593, guid: c597e9f36297448ad83bcac9b3a3aa73, type: 3}

@@ -7,7 +7,7 @@ using VContainer;
 using VContainer.Unity;
 using VS.Runtime.Core.Infrastructure;
 
-namespace VS.Runtime.Utilities
+namespace VS.Runtime.Services.Input
 {
     public interface IInputService
     {
@@ -68,7 +68,7 @@ namespace VS.Runtime.Utilities
                 Vector3 currentPosition = Vector3.zero;
                 
                 #if UNITY_EDITOR
-                currentPosition = Input.mousePosition;
+                currentPosition = UnityEngine.Input.mousePosition;
                 #elif UNITY_ANDROID || UNITY_IOS
                 currentPosition = Input.GetTouch(0).position;
                 #endif

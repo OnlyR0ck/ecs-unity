@@ -1,7 +1,7 @@
 using System;
 using UnityEngine.EventSystems;
 
-namespace VS.Runtime.Utilities
+namespace VS.Runtime.Services.Input
 {
     public interface IInputHandlerService
     {

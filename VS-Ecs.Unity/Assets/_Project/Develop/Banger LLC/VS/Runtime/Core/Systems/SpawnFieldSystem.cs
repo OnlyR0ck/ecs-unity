@@ -37,8 +37,14 @@ namespace VS.Runtime.Core.Systems
             foreach (int entity in _world.Where(out GridAspect aspect))
             {
                 ref GridComponent grid = ref aspect.Grids.Get(entity);
-                foreach (CellView cell in grid.Grid)
+                foreach (CellView cell in grid.Cells)
                 {
+                    if (cell.State != ECellState.Free)
+                    {
+                        cell.SetState(ECellState.Free);
+                        continue;
+                    }
+
                     BubbleView bubbleView = Object.Instantiate(_bubblePrefab, cell.transform, false);
                     cell.SetState(ECellState.Occupied);
                     bubbleView.SetColor(BubbleExtensions.GetRandomColor());

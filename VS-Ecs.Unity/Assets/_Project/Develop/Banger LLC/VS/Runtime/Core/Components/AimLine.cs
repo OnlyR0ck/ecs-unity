@@ -5,7 +5,7 @@ using UnityEngine;
 namespace VS.Runtime.Core.Components
 {
     [Serializable]
-    public struct AimLineComponent : IEcsComponent
+    public struct AimLine : IEcsComponent
     {
         public LineRenderer AimLineRenderer;
     }

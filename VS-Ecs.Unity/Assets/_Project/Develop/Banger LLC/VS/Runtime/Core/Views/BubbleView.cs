@@ -5,18 +5,23 @@ using Random = System.Random;
 
 namespace VS.Runtime.Core.Views
 {
-    public class BubbleView : View
+    public class BubbleView : EcsView
     {
         [field: SerializeField] public SpriteRenderer Sprite { get; private set; }
-        
+        [field: SerializeField] public EBubbleColor Color { get; private set; }
+
         public void OnRelease() => 
             gameObject.SetActive(false);
 
         public void SetSprite(Sprite sprite) => Sprite.sprite = sprite;
-        public void SetColor(EBubbleColor colorType) => Sprite.color = BubbleExtensions.GetColor(colorType);
+        public void SetColor(EBubbleColor colorType)
+        {
+            Color = colorType;
+            Sprite.color = BubbleExtensions.GetColor(colorType);
+        }
     }
 
-    public class BubbleExtensions
+    public static class BubbleExtensions
     {
         private static int? _colorRange;
         private static Random _random;
@@ -38,7 +43,7 @@ namespace VS.Runtime.Core.Views
             BubbleColorDictionary[colorType];
 
         public static EBubbleColor GetRandomColor() =>
-            (EBubbleColor)Random.Next(ColorRange);
+            (EBubbleColor)Random.Next(1, ColorRange);
     }
 
     public enum EBubbleColor

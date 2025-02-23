@@ -5,12 +5,12 @@ using UnityEngine;
 namespace VS.Runtime.Core.Components
 {
     [Serializable]
-    public struct CannonComponent : IEcsComponent
+    public struct Cannon : IEcsComponent
     {
         public Transform AimLineRoot;
         public Transform BulletSpawnRoot;
     }
     
     
-    public class CannonTemplate : ComponentTemplate<CannonComponent> { }
+    public class CannonTemplate : ComponentTemplate<Cannon> { }
 }

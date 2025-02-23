@@ -1,9 +1,10 @@
 ﻿using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
+using VS.Runtime;
 using VS.Runtime.Utilities.Logging;
 using UnitySceneManager = UnityEngine.SceneManagement.SceneManager;
 
-namespace VS.Runtime.Utilities
+namespace VS.Runtime.Services
 {
     public class SceneService
     {

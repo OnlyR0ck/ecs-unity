@@ -1,9 +1,12 @@
 using System.Collections.Generic;
+using VS.Runtime.Services.Input;
 using DCFApixels.DragonECS;
 using UnityEngine;
 using VS.Core.Configs.Features;
 using VS.Runtime.Core.Components;
 using VS.Runtime.Core.Constants;
+using VS.Runtime.Core.Enums;
+using VS.Runtime.Core.Views;
 using VS.Runtime.Test;
 using VS.Runtime.Utilities;
 using Object = UnityEngine.Object;
@@ -18,7 +21,7 @@ namespace VS.Runtime.Core.Systems
         #endif
         private sealed class CannonAspect : EcsAspect
         {
-            public EcsPool<CannonComponent> Cannons = Inc;
+            public EcsPool<Cannon> Cannons = Inc;
         }
 
         #if ENABLE_IL2CPP
@@ -27,7 +30,7 @@ namespace VS.Runtime.Core.Systems
         #endif
         private class AimLineAspect : EcsAspect
         {
-            public EcsPool<AimLineComponent> AimLines = Inc;
+            public EcsPool<AimLine> AimLines = Inc;
         }
         
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
@@ -110,6 +113,12 @@ namespace VS.Runtime.Core.Systems
 
                 var hit = _hits[0];
 
+                if (hit.collider.TryGetComponent(out CellView view) && view.State == ECellState.Occupied)
+                {
+                    collisionPoints.Add(hit.point);
+                    break;
+                }
+                
                 if (hit.normal == Vector2.down)
                 {
                     collisionPoints.Add(hit.point);

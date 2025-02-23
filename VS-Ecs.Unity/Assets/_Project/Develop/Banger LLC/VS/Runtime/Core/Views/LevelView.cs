@@ -7,5 +7,6 @@ namespace VS.Runtime.Core.Views
     {
         [field: SerializeField] public Transform GridSpawnPoint { get; private set; }
         [field: SerializeField] public Transform GridSpawnRoot { get; private set; }
+        [field: SerializeField] public Transform CannonSpawnRoot { get; private set; }
     }
 }
