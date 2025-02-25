@@ -1,3 +1,4 @@
+using VS.Runtime.Services.Input;
 using DCFApixels.DragonECS;
 using UnityEngine;
 using VContainer;
@@ -11,9 +12,9 @@ namespace VS.Runtime.Core.Systems
     {
         private class Aspect : EcsAspect
         {
-            public EcsPool<CannonComponent> Cannons = Inc;
+            public EcsPool<Cannon> Cannons = Inc;
             public EcsPool<UnityComponent<Transform>> Transforms = Inc;
-            public EcsPool<RotationComponent> Rotations = Inc;
+            public EcsPool<Rotation> Rotations = Inc;
         }
         
         private readonly IInputService _inputService;

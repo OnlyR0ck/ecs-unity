@@ -15,3 +15,4 @@ MonoBehaviour:
   <MaxReflections>k__BackingField: 5
   <CastOffset>k__BackingField: 0.1
   <CastDistance>k__BackingField: 100
+  <ProjectileLifetimeDuration>k__BackingField: 3

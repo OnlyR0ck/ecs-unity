@@ -1,34 +1,48 @@
 using DCFApixels.DragonECS;
+using UnityEngine;
 using UnityEngine.Rendering;
-using VS.Pool;
-using VS.Pool.Interfaces;
+using VContainer;
+using VS.Runtime.Core.Components;
 
 namespace VS.Runtime.Core.Systems
 {
     public class CleanUpSystem : IEcsRun
     {
-        private readonly IPool _pool;
+        #if ENABLE_IL2CPP
+[Il2CppSetOption(Option.NullChecks, false)]
+[Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+        #endif
+        private class Aspect : EcsAspect
+        {
+            public EcsPool<AutoDestroy> Timers = Inc;
+            public EcsPool<UnityComponent<Transform>> Transforms = Inc;
+            
+        }
         private readonly CommandBuffer _buffer = new();
-        private EcsDefaultWorld _world;
+        private readonly EcsDefaultWorld _world;
 
-        public CleanUpSystem(EcsDefaultWorld world, IPoolContainer poolContainer)
+        [Inject]
+        public CleanUpSystem(EcsDefaultWorld world)
         {
             _world = world;
-            _pool = poolContainer.GetPool(PoolsID.Level);
         }
         
         public void Run()
         {
-            /*var query = new QueryDescription().WithAll<AutoDestroyComponent>();
-            var state = t;
-            World.Query(in query, (ref Entity entity, ref AutoDestroyComponent component) =>
+            float deltaTime = Time.deltaTime;
+            foreach (int entity in _world.Where(out Aspect aspect))
             {
-                component.TimeToDestroy -= state.DeltaTime;
+                ref AutoDestroy component = ref aspect.Timers.Get(entity);
+                ref Transform transform = ref aspect.Transforms.Get(entity).obj;
                 if (component.TimeToDestroy <= 0)
                 {
-                    World.Destroy(entity);
-                } 
-            });*/
+                    //_world.DelEntity(entity);
+                    Object.Destroy(transform.gameObject);
+                    continue;
+                }
+
+                component.TimeToDestroy -= deltaTime;
+            }
         }
     }
 }

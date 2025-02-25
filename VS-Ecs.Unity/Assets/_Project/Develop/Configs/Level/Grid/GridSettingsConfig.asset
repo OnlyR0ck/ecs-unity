@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b08d1a41fc041dab7c12d09cb272cbc, type: 3}
+  m_Name: GridSettingsConfig
+  m_EditorClassIdentifier: 
+  <Rows>k__BackingField: 12
+  <VisibleRows>k__BackingField: 8
+  <Columns>k__BackingField: 11
+  <OffsetColumns>k__BackingField: 1
+  <StartIsEven>k__BackingField: 1
+  <CellViewPrefab>k__BackingField: {fileID: 3027907663324020329, guid: eeea68efc5fdc4911907cfa5cef7d13f, type: 3}
+  <StartOffset>k__BackingField: 0.85

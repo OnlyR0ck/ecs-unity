@@ -1,14 +1,17 @@
 using System.Collections.Generic;
+using VS.Runtime.Services.Input;
 using DCFApixels.DragonECS;
 using UnityEngine;
 using VS.Core.Configs.Features;
-using VS.Pool;
-using VS.Pool.Interfaces;
 using VS.Runtime.Core.Components;
 using VS.Runtime.Core.Constants;
+using VS.Runtime.Core.Enums;
+using VS.Runtime.Core.Models;
 using VS.Runtime.Core.Views;
+using VS.Runtime.Extensions;
+using VS.Runtime.Services.Grid;
 using VS.Runtime.Test;
-using VS.Runtime.Utilities;
+using VS.Runtime.Utilities.Debug;
 
 #if ENABLE_IL2CPP
 using Unity.IL2CPP.CompilerServices;
@@ -16,35 +19,80 @@ using Unity.IL2CPP.CompilerServices;
 
 namespace VS.Runtime.Core.Systems
 {
-    public class CannonShootSystem : IEcsInit, IEcsDestroy
+    public sealed class CannonShootSystem : IEcsInit, IEcsDestroy
     {
+        #region Nested
+
         #if ENABLE_IL2CPP
         [Il2CppSetOption(Option.NullChecks, false)]
         [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
         #endif
-        private class Aspect : EcsAspect
+        private class CannonAspect : EcsAspect
         {
-            public EcsPool<CannonComponent> Cannons = Inc;
+            public EcsPool<Cannon> Cannons = Inc;
+        }
+
+        #if ENABLE_IL2CPP
+        [Il2CppSetOption(Option.NullChecks, false)]
+        [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+        #endif
+        private class ProjectileAspect : EcsAspect
+        {
+            public EcsPool<Bubble> Bubbles = Inc;
+            public EcsPool<Path> Paths = Exc;
         }
         
-        private readonly IInputService _inputService;
-        private Transform _bulletSpawnRoot;
-        private readonly IPool _pool;
-        private Transform _aimLineRoot;
-        private readonly RaycastHit2D[] _hits = new RaycastHit2D[1];
-        private readonly ShootingConfig _config;
-        private readonly EcsEntityConnect _bubblePrefab;
-        private readonly EcsDefaultWorld _world;
+        #if ENABLE_IL2CPP
+        [Il2CppSetOption(Option.NullChecks, false)]
+        [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+        #endif
+        private class FlyingProjectileAspect : EcsAspect
+        {
+            public EcsPool<Bubble> Bubbles = Inc;
+            public EcsPool<Path> Paths = Inc;
+        }
 
-        public CannonShootSystem(EcsDefaultWorld world, IInputService inputService, ShootingConfig config, IPoolContainer container, ResourcesContainer resourcesContainer)
+        #if ENABLE_IL2CPP
+        [Il2CppSetOption(Option.NullChecks, false)]
+        [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
+        #endif
+        private class GridAspect : EcsAspect
+        {
+            public EcsPool<GridComponent> Grids = Inc;
+        }
+
+        #endregion
+
+
+        private readonly RaycastHit2D[] _hits = new RaycastHit2D[1];
+        private readonly IInputService _inputService;
+        private readonly BubbleView _bubblePrefab;
+        private readonly ShootingConfig _config;
+        private readonly EcsDefaultWorld _world;
+        private readonly GridParams _params;
+        private readonly GridModel _model;
+        
+        private Transform _bulletSpawnRoot;
+        private Transform _aimLineRoot;
+
+        public CannonShootSystem
+        (
+            EcsDefaultWorld world,
+            IInputService inputService,
+            ShootingConfig config,
+            ResourcesContainer resourcesContainer,
+            IGridParamsService paramsService,
+            GridModel model
+        )
         {
             _world = world;
             _config = config;
+            _model = model;
             _inputService = inputService;
-            _pool = container.GetPool(PoolsID.Level);
             _bubblePrefab = resourcesContainer.Bubble;
+            _params = paramsService.Params;
         }
-        
+
 
         public void Init()
         {
@@ -57,7 +105,7 @@ namespace VS.Runtime.Core.Systems
 
         private void CacheValues()
         {
-            foreach (var entity in _world.Where(out Aspect aspect))
+            foreach (var entity in _world.Where(out CannonAspect aspect))
             {
                 _bulletSpawnRoot = aspect.Cannons.Get(entity).BulletSpawnRoot;
                 _aimLineRoot = aspect.Cannons.Get(entity).AimLineRoot;
@@ -69,33 +117,56 @@ namespace VS.Runtime.Core.Systems
             if (!IsAllowedToShoot())
                 return;
             
-            //var view = _pool.Get<BubbleView>(LevelPoolIDs.BubbleID, nulxl, _bulletSpawnRoot.position);
-            var view = Object.Instantiate(_bubblePrefab, _bulletSpawnRoot.position, Quaternion.identity);
-            GetCollisionPoints(out var points);
+            var projectile = Object.Instantiate(_bubblePrefab, _bulletSpawnRoot.position, Quaternion.identity);
+            projectile.transform.localScale = _params.CellSize;
+            projectile.SetColor(BubbleExtensions.GetRandomColor());
+            entlong projectileEntity = _world.NewEntityLong();
+            projectile.Connector.ConnectWith(projectileEntity, true);
+
+            GetCollisionPoints(out var points, out Vector2Int? index);
+
+            var pathPool = _world.GetPool<Path>();
+            ref var path = ref pathPool.TryAddOrGet(projectileEntity.ID);
+            path.Points = points.ToArray();
             
-            /*if (EntityConversion.TryGetEntity(view.gameObject, out EntityReference entity))
+            if (!index.HasValue)
             {
-                World.Add(entity, new PathComponent(points.ToArray()), new AutoDestroyComponent());
-            }*/
+                CustomDebugLog.LogError("The cell index wasn't found, something went wrong");
+            }
+            
+            var replacementsPool = _world.GetPool<ProjectileToCell>();
+            ref var replacement = ref replacementsPool.TryAddOrGet(projectileEntity.ID);
+            replacement.Color = projectile.Color;
+            replacement.Index = index ?? Vector2Int.zero;
+
         }
 
-        private void GetCollisionPoints(out List<Vector3> collisionPoints)
+        private void GetCollisionPoints(out List<Vector3> collisionPoints, out Vector2Int? index)
         {
             Vector2 direction = _aimLineRoot.up; 
             Vector2 origin = _aimLineRoot.position;
+            index = null;
 
             int maxReflections = 5;
-            collisionPoints = new List<Vector3>();
-            collisionPoints.Add(origin);
-
             int currentReflection = 0;
+            collisionPoints = new List<Vector3> { origin };
+            
 
             while (currentReflection < maxReflections)
             {
                 if (Physics2D.RaycastNonAlloc(origin, direction, _hits, _config.CastDistance, LayerMaskHash.Level) == 0)
                     break;
-
+                
                 var hit = _hits[0];
+                if (hit.collider.TryGetComponent(out CellView view) && view.State == ECellState.Occupied)
+                {
+                    CellView cell = _model.FindClosestCell(hit.point, ECellState.Free);
+                    Vector3 cellPosition = cell.transform.position;
+                    index = cell.Coord;
+                    collisionPoints.Add(hit.point);
+                    collisionPoints.Add(cellPosition);
+                    break;
+                }
 
                 if (hit.normal == Vector2.down)
                 {
@@ -112,6 +183,15 @@ namespace VS.Runtime.Core.Systems
             }
         }
 
-        private bool IsAllowedToShoot() => true;
+        //for now, it's always allowed
+        private bool IsAllowedToShoot()
+        {
+            foreach (var _ in _world.Where(out FlyingProjectileAspect _))
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

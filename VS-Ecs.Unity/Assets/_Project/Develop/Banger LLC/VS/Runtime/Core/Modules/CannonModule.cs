@@ -29,6 +29,7 @@ namespace VS.Runtime.Core.Modules
             builder.Add(_resolver.Instantiate<CannonSpawnSystem>(Lifetime.Transient));
             builder.Add(_resolver.Instantiate<CannonRotationSystem>(Lifetime.Transient));
             builder.Add(_resolver.Instantiate<CannonAimLineSystem>(Lifetime.Transient));
+            builder.Add(_resolver.Instantiate<CannonShootSystem>(Lifetime.Transient));
         }
     }
 }
