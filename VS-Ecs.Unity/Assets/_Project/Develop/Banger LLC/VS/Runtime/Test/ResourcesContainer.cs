@@ -12,5 +12,6 @@ namespace VS.Runtime.Test
         [field: SerializeField] public EcsEntityConnect AimLine { get; private set; }
         [field: SerializeField] public BubbleView BubbleCell { get; private set; }
         [field: SerializeField] public GridView GridViewPrefab { get; private set; }
+        [field: SerializeField] public EcsEntityConnect CellHighlight { get; private set; }
     }
 }

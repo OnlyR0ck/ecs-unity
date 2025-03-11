@@ -17,6 +17,7 @@ namespace VS.Runtime.Test
         [SerializeField] private ResourcesContainer _resourcesContainer;
         [SerializeField] private ShootingConfig _shootingConfig;
         [SerializeField] private GridSettingsConfig _gridSettingsConfig;
+        [SerializeField] private GameplayRulesConfig _gameplayRulesConfig;
         [SerializeField] private InputHandlerService _inputHandler;
         [SerializeField] private CoreGameSceneRefs _refs;
         [SerializeField] private LevelView _levelView;
@@ -31,6 +32,7 @@ namespace VS.Runtime.Test
             builder.RegisterInstance(_resourcesContainer);
             builder.RegisterInstance(_shootingConfig);
             builder.RegisterInstance(_gridSettingsConfig);
+            builder.RegisterInstance(_gameplayRulesConfig);
             builder.RegisterInstance(_inputHandler);
             builder.RegisterInstance(_refs).As<ICoreGameSceneRefs>();
             builder.RegisterInstance(_levelView).As<ILevel>();

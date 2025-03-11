@@ -1,87 +1,18 @@
+using System.Collections.Generic;
 using UnityEngine;
 using VS.Runtime.Core.Enums;
 using VS.Runtime.Core.Models;
 using VS.Runtime.Core.Views;
+using VS.Runtime.Utilities.Debug;
 
 namespace VS.Runtime.Extensions
 {
     public static class GridExtensions
     {
-        public static bool IsBubbleHit(this GridModel model, Vector2 rayOrigin, Vector2 rayDirection, out Vector2[] points, Vector2 cellSize)
-        {
-            points = new Vector2[2];
-            float closestDistance = float.MaxValue;
-            bool hitBubble = false;
-            var grid = model.Grid;
-
-            float bubbleRadius = cellSize.x / 2.0f;
-
-            for (int i = 0; i < grid.Cells.GetLength(0); i++)
-            {
-                for (int j = 0; j < grid.Cells.GetLength(1); j++)
-                {
-                    Vector2 bubble = grid.Cells[i, j].transform.position;
-                    Vector2 vectorToBubble = bubble - rayOrigin;
-                    float projectionLength = Vector2.Dot(vectorToBubble, rayDirection.normalized);
-
-                    // Skip if bubble is behind ray origin
-                    if (projectionLength < 0)
-                        continue;
-
-                    // Find closest point on ray to this bubble
-                    Vector2 closestPointOnRay = rayOrigin + rayDirection.normalized * projectionLength;
-                    float distanceToBubble = Vector2.Distance(closestPointOnRay, bubble);
-
-                    // Check if ray hits this bubble
-                    if (distanceToBubble <= bubbleRadius && grid.Cells[i, j].State == ECellState.Occupied)
-                    {
-                        Debug.Log($"Suspect: ({i}, {j})");
-                        /*if (!RayCircleIntersection.FindIntersection(rayOrigin, rayDirection.normalized, bubble, bubbleRadius,
-                                out float x, out float y))*/
-                        if (!RayCircleIntersection.FindIntersection(rayOrigin, rayDirection.normalized, bubble, bubbleRadius,
-                                out Vector2 ip))
-                        {
-                            return false;
-                        };
-
-                        Vector2 collisionPoint = ip;
-                        Vector2Int closestIndex = Vector2Int.zero;
-                        closestDistance = ((Vector2)grid.Cells[closestIndex.x, closestIndex.y].transform.position 
-                                                 - collisionPoint).sqrMagnitude;
-
-                        for (int k = 0; k < grid.Cells.GetLength(0); k++)
-                        {
-                            for (int l = 0; l < grid.Cells.GetLength(1); l++)
-                            {
-                                if (grid.Cells[k, l].State != ECellState.Free)
-                                    continue;
-                                
-                                var position = (Vector2)grid.Cells[k, l].transform.position;
-                                var distance = (position - collisionPoint).sqrMagnitude;
-                                if (distance > closestDistance)
-                                    continue;
-
-                                closestDistance = distance;
-                                closestIndex = new Vector2Int(k, l);
-                            }
-                        }
-
-                        points[0] = collisionPoint;
-                        points[1] = grid.Cells[closestIndex.x, closestIndex.y].transform.position;
-                        return true;
-                        // Only consider empty cells and closer hits
-                        /*if (grid.Cells[i, j].State == ECellState.Free && projectionLength < closestDistance)
-                        {
-                            closestDistance = projectionLength;
-                            closestEmptyBubble = closestPointOnRay;
-                        }*/
-                    }
-                }
-            }
-
-            return false;
-        }
-
+        private static readonly int[] DxNeighborsEven = { 0, 1, -1, 1, 0, 1 };
+        private static readonly int[] DxNeighborsNotEven = { -1, 0, -1, 1, -1, 0 };
+        
+        private static readonly int[] DyNeighbors = { 1, 1, 0, 0, -1, -1 };
 
         public static CellView FindClosestCell(this GridModel model, Vector2 position, ECellState cellState)
         {
@@ -89,7 +20,7 @@ namespace VS.Runtime.Extensions
             return model.Grid.Cells[i.x, i.y];
         }
         
-        public static Vector2Int FindClosestCellIndex(this GridModel model, Vector2 position, ECellState cellState)
+        public static Vector2Int FindClosestCellIndex(this GridModel model, Vector2 position, ECellState cellState = ECellState.None)
         {
             var grid = model.Grid;
             float closestSqrDistance = ((Vector2)grid.Cells[0, 0].transform.position - position).sqrMagnitude;
@@ -99,7 +30,7 @@ namespace VS.Runtime.Extensions
             {
                 for (int j = 0; j < grid.Cells.GetLength(1); j++)
                 {
-                    if (grid.Cells[i, j].State != cellState)
+                    if (grid.Cells[i, j].State != cellState && cellState != ECellState.None)
                         continue;
                     
                     var currentSqrDistance = ((Vector2)grid.Cells[i, j].transform.position - position).sqrMagnitude;
@@ -112,6 +43,62 @@ namespace VS.Runtime.Extensions
             }
 
             return closestBubble;
+        }
+
+        public static void GetConnectedSameColoredCells(this GridModel model, Vector2Int index, ref HashSet<Vector2Int> visited)
+        {
+            if (visited.Contains(index))
+                return;
+
+            if (model.Grid.Cells[index.x, index.y].Content is not BubbleView view)
+            {
+                return;
+            }
+
+            var color = view.Color;
+            visited.Add(index);
+
+            foreach (var i in model.GetNeighbors(index))
+            {
+                if (visited.Contains(i))
+                    continue;
+
+                CellView cell = model.Grid.Cells[i.x, i.y];
+
+                if (cell.State != ECellState.Occupied)
+                    continue;
+
+                if (cell.Content is BubbleView bubble && bubble.Color != color)
+                    continue;
+
+                GetConnectedSameColoredCells(model, i, ref visited);
+            }
+        }
+
+        public static IReadOnlyCollection<Vector2Int> GetNeighbors(this GridModel model, Vector2Int index)
+        {
+            Debug.Log($"Current Cell: {index}");
+            
+            int lengthX = model.Grid.Cells.GetLength(0);
+            int lengthY = model.Grid.Cells.GetLength(1);
+            var neighbors = new List<Vector2Int>();
+
+            for (int i = 0; i < DxNeighborsEven.Length; i++)
+            {
+                int xOffset = model.Grid.StartIsEven == (index.y % 2 == 0) ? DxNeighborsEven[i] : DxNeighborsNotEven[i]; 
+                int newX = index.x + xOffset;
+                int newY = index.y + DyNeighbors[i];
+
+                // Check if the new position is within grid bounds
+                Debug.Log($"Checking neighbor {i}: ({newX}, {newY}) - Offset: ({xOffset}, {DyNeighbors[i]})");
+
+                if (newX >= 0 && newX < lengthX && newY >= 0 && newY < lengthY)
+                {
+                    neighbors.Add(new Vector2Int(newX, newY));
+                }
+            }
+
+            return neighbors;
         }
     }
 }

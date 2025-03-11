@@ -82,6 +82,7 @@ namespace VS.Runtime.Core.Systems
             {
                 ref GridComponent grid = ref aspect.Grids.Get(entity);
                 grid.Cells = views;
+                grid.StartIsEven = _params.Config.StartIsEven;
                 _gridModel.Initialize(ref grid);
             }
         }

@@ -1383,6 +1383,7 @@ MonoBehaviour:
   _resourcesContainer: {fileID: 11400000, guid: 8c8fafba79c70404cbb6b6b3184a2999, type: 2}
   _shootingConfig: {fileID: 11400000, guid: 2b8f5086867eb492ab0d53ccce7fd88d, type: 2}
   _gridSettingsConfig: {fileID: 11400000, guid: 4cf6445c993af4755925565df1c96e97, type: 2}
+  _gameplayRulesConfig: {fileID: 11400000, guid: 5751816da3049499da0fa0e33d486c7f, type: 2}
   _inputHandler: {fileID: 694457093}
   _refs: {fileID: 956113282}
   _levelView: {fileID: 223557133}

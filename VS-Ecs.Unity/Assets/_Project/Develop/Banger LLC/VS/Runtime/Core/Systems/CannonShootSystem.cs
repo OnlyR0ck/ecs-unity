@@ -74,6 +74,7 @@ namespace VS.Runtime.Core.Systems
         
         private Transform _bulletSpawnRoot;
         private Transform _aimLineRoot;
+        private EBubbleColor _nextColor;
 
         public CannonShootSystem
         (
@@ -98,6 +99,8 @@ namespace VS.Runtime.Core.Systems
         {
             CacheValues();
             _inputService.OnEndDrag += OnEndDrag_Handler;
+            _nextColor = BubbleExtensions.GetRandomColor();
+            Debug.Log($"Next color: {_nextColor}");
         }
 
         public void Destroy() => 
@@ -119,7 +122,10 @@ namespace VS.Runtime.Core.Systems
             
             var projectile = Object.Instantiate(_bubblePrefab, _bulletSpawnRoot.position, Quaternion.identity);
             projectile.transform.localScale = _params.CellSize;
-            projectile.SetColor(BubbleExtensions.GetRandomColor());
+            projectile.SetColor(_nextColor);
+            _nextColor = BubbleExtensions.GetRandomColor();
+            Debug.Log($"Next color: {_nextColor}");
+            
             entlong projectileEntity = _world.NewEntityLong();
             projectile.Connector.ConnectWith(projectileEntity, true);
 

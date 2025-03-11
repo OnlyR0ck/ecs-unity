@@ -46,8 +46,9 @@ namespace VS.Runtime.Core.Systems
                     }
 
                     BubbleView bubbleView = Object.Instantiate(_bubblePrefab, cell.transform, false);
-                    cell.SetState(ECellState.Occupied);
                     bubbleView.SetColor(BubbleExtensions.GetRandomColor());
+                    cell.SetState(ECellState.Occupied);
+                    cell.SetContent(bubbleView);
                 }
             }
         }

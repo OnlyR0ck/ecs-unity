@@ -2,6 +2,7 @@ using DCFApixels.DragonECS;
 using UnityEngine;
 using VContainer;
 using VS.Runtime.Core.Components;
+using VS.Runtime.Core.Components.OneFrameComponents.Events;
 using VS.Runtime.Core.Enums;
 using VS.Runtime.Core.Models;
 using VS.Runtime.Core.Views;
@@ -50,9 +51,14 @@ namespace VS.Runtime.Core.Systems
                 var bubbleView = Object.Instantiate(_cellPrefab, cell.transform);
                 bubbleView.SetColor(projectileToCell.Color);
                 cell.SetState(ECellState.Occupied);
+                cell.SetContent(bubbleView);
                 
                 ref var transform = ref aspect.Transforms.Get(entity);
                 Object.Destroy(transform.obj.gameObject);
+                
+                int refreshFieldEventEntity = _world.NewEntity();
+                ref RefreshFieldEvent fieldEvent = ref _world.GetPool<RefreshFieldEvent>().TryAddOrGet(refreshFieldEventEntity);
+                fieldEvent.Index = index;
             }
         }
     }
