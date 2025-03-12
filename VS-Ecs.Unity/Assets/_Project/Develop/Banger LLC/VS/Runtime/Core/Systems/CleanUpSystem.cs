@@ -18,7 +18,7 @@ namespace VS.Runtime.Core.Systems
             public EcsPool<UnityComponent<Transform>> Transforms = Inc;
             
         }
-        private readonly CommandBuffer _buffer = new();
+        
         private readonly EcsDefaultWorld _world;
 
         [Inject]

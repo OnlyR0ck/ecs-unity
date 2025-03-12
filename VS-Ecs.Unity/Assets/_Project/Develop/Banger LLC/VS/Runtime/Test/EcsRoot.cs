@@ -31,12 +31,12 @@ namespace VS.Runtime.Test
             builder.Inject(_world)
                 .Add(_objectResolver.Instantiate<GridSpawnSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<SpawnFieldSystem>(Lifetime.Transient))
-                //.Add(_objectResolver.Instantiate<CannonModule>(Lifetime.Transient))
+                .Add(_objectResolver.Instantiate<CannonModule>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<MoveAlongPathSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<CleanUpSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<ProjectileReplacementSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<DropAndPopSystem>(Lifetime.Transient))
-                .Add(_objectResolver.Instantiate<HighlightNeighborCellsSystem>(Lifetime.Transient))
+                // .Add(_objectResolver.Instantiate<HighlightNeighborCellsSystem>(Lifetime.Transient))
                 .AutoDel<RefreshFieldEvent>();
 
 

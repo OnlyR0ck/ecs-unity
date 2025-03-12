@@ -148,6 +148,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _components:
   - rid: 2270765536351879168
+  - rid: 2270765536351879233
   references:
     version: 2
     RefIds:
@@ -156,4 +157,10 @@ MonoBehaviour:
       data:
         component:
           TimeToDestroy: 0.5
+        _offset: 0
+    - rid: 2270765536351879233
+      type: {class: UnityComponentTransformTemplate, ns: DCFApixels.DragonECS, asm: DCFApixels.DragonECS.Unity}
+      data:
+        component:
+          obj: {fileID: 3165805333768406126}
         _offset: 0

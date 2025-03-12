@@ -7,6 +7,13 @@
       "dependencies": {},
       "hash": "9057452c86079e4265228480b1439442894d5078"
     },
+    "com.dcfa_pixels.debugx": {
+      "version": "https://github.com/DCFApixels/Unity-DebugX.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "6f354f77e0315bc6856343845d3c6e6d0d157279"
+    },
     "com.dcfa_pixels.dragonecs": {
       "version": "https://github.com/DCFApixels/DragonECS.git",
       "depth": 0,

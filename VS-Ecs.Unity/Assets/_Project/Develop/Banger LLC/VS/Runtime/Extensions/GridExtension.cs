@@ -77,20 +77,15 @@ namespace VS.Runtime.Extensions
 
         public static IReadOnlyCollection<Vector2Int> GetNeighbors(this GridModel model, Vector2Int index)
         {
-            Debug.Log($"Current Cell: {index}");
-            
             int lengthX = model.Grid.Cells.GetLength(0);
             int lengthY = model.Grid.Cells.GetLength(1);
             var neighbors = new List<Vector2Int>();
 
             for (int i = 0; i < DxNeighborsEven.Length; i++)
             {
-                int xOffset = model.Grid.StartIsEven == (index.y % 2 == 0) ? DxNeighborsEven[i] : DxNeighborsNotEven[i]; 
-                int newX = index.x + xOffset;
-                int newY = index.y + DyNeighbors[i];
-
-                // Check if the new position is within grid bounds
-                Debug.Log($"Checking neighbor {i}: ({newX}, {newY}) - Offset: ({xOffset}, {DyNeighbors[i]})");
+                int xOffset = model.Grid.StartIsEven == (index.x % 2 == 0) ? DxNeighborsEven[i] : DxNeighborsNotEven[i]; 
+                int newX = index.x + DyNeighbors[i];
+                int newY = index.y + xOffset;
 
                 if (newX >= 0 && newX < lengthX && newY >= 0 && newY < lengthY)
                 {

@@ -96,6 +96,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Connector>k__BackingField: {fileID: 6053879542062540003}
   <Sprite>k__BackingField: {fileID: 6580298826408182811}
+  <Color>k__BackingField: 0
 --- !u!61 &1436791156117548308
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -103,7 +104,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1806039190858939217}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:

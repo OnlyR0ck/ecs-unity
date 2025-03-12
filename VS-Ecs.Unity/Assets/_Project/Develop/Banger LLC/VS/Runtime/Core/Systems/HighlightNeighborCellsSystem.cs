@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DCFApixels;
 using DCFApixels.DragonECS;
 using UnityEngine;
 using VContainer;
@@ -24,7 +25,7 @@ namespace VS.Runtime.Core.Systems
 
         private readonly GridModel _model;
         private EcsEntityConnect _highlightPrefab;
-        private RaycastHit[] _hits;
+        private RaycastHit2D[] _hits;
         private Camera _camera;
         private LayerMask _layerMask;
         private EcsDefaultWorld _world;
@@ -41,24 +42,30 @@ namespace VS.Runtime.Core.Systems
         {
             _camera = Camera.main;
             _layerMask = LayerMask.GetMask("Level");
-            _hits = new RaycastHit[10];
+            _hits = new RaycastHit2D[10];
         }
 
         public void Run()
         {
+            if (!Input.GetMouseButtonDown(0))
+                return;
+            
             var ray = _camera.ScreenPointToRay(Input.mousePosition);
             Debug.DrawRay(ray.origin, ray.direction * 100, Color.yellow);
-            if (Physics.RaycastNonAlloc(ray, _hits, float.PositiveInfinity, _layerMask) == 0)
+            if (Physics2D.RaycastNonAlloc(ray.origin, ray.direction, _hits, _layerMask) == 0)
                 return;
 
             if (!_hits[0].collider.TryGetComponent(out CellView view))
                 return;
 
+            
             Vector2Int index = _model.FindClosestCellIndex(view.transform.position);
             IReadOnlyCollection<Vector2Int> indices = _model.GetNeighbors(index);
+            DebugX.Draw(Color.black).Text(_camera.WorldToScreenPoint(_hits[0].transform.position), index);
             foreach (Vector2Int i in indices)
             {
                 var cell = _model[i];
+                DebugX.Draw(Color.black).Text(_camera.WorldToScreenPoint(cell.transform.position), i);
                 entlong entity = _world.NewEntityLong();
                 var highlighter = Object.Instantiate(_highlightPrefab, cell.transform);
                 highlighter.ConnectWith(entity, true);
