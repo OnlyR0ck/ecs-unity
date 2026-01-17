@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using DCFApixels;
 using DCFApixels.DragonECS;
+using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
 using VContainer;
 using VS.Runtime.Core.Components;

@@ -16,14 +16,14 @@ namespace VS.Runtime.Extensions
                 }
             }
 
-            Registration registration = registrationBuilder.Build();
+            var registration = registrationBuilder.Build();
             return (T)resolver.Resolve(registration);
         }
         
         public static T Instantiate<T>(this IObjectResolver resolver, Lifetime lifetime)
         {
             var registrationBuilder = new RegistrationBuilder(typeof(T), lifetime);
-            Registration registration = registrationBuilder.Build();
+            var registration = registrationBuilder.Build();
             return (T)resolver.Resolve(registration);
         }
     }

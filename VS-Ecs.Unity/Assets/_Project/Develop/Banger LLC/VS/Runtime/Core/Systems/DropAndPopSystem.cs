@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DCFApixels.DragonECS;
+using DG.Tweening;
+using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
 using VContainer;
 using VS.Core.Configs.Features;
@@ -35,6 +37,8 @@ namespace VS.Runtime.Core.Systems
             _world = world;
         }
         
+        
+        //TODO: replace dotween either with manual update, either with another allocation free lib
         public void Run()
         {
             foreach (int entity in _world.Where(out EventAspect aspect))
@@ -54,15 +58,30 @@ namespace VS.Runtime.Core.Systems
                     PopBubble(cell, iter).Forget();
                     iter++;
                 }
+
+                IReadOnlyCollection<Vector2Int> unattached = _gridModel.GetUnattached();
+                foreach (var i in unattached)
+                {
+                    var cell = _gridModel[i];
+                    GameObject content = cell.Content.gameObject;
+                    cell.SetState(ECellState.Free);
+                    cell.SetContent(null);
+                    DOTween.Sequence()
+                        .AppendInterval(0.1f * iter)
+                        .Append(content.transform.DOLocalMoveY(-20, 1).SetEase(Ease.InBack))
+                        .OnComplete((() => Object.Destroy(content)));
+                    iter++;
+                }
             }
         }
 
         private async UniTaskVoid PopBubble(CellView cell, int iter)
         {
-            await UniTask.Delay(100 * iter);
-            Object.Destroy(cell.Content.gameObject);
-            cell.SetContent(null);
+            GameObject content = cell.Content.gameObject;
             cell.SetState(ECellState.Free);
+            cell.SetContent(null);
+            await UniTask.Delay(100 * iter);
+            Object.Destroy(content);
         }
     }
 }

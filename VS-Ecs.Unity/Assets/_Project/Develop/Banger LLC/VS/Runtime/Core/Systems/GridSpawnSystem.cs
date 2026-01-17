@@ -1,5 +1,6 @@
 using VS.Runtime.Services.Grid;
 using DCFApixels.DragonECS;
+using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
 using VS.Runtime.Core.Components;
 using VS.Runtime.Core.Enums;

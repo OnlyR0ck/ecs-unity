@@ -54,7 +54,7 @@ namespace DCFApixels.DragonECS
         {
             for (int i = 0, iMax = _worlds.Count; i < iMax; i++)
             {
-                EcsWorld world = _worlds[i];
+                var world = _worlds[i];
                 if (world.IsDestroyed == false && world.IsComponentTypeDeclared<TComponent>())
                 {
                     world.GetAspect<Aspect>().pool.ClearAll();
@@ -100,7 +100,7 @@ namespace DCFApixels.DragonECS
         {
             for (int i = 0, iMax = _worlds.Count; i < iMax; i++)
             {
-                EcsWorld world = _worlds[i];
+                var world = _worlds[i];
                 if (world.IsDestroyed == false && world.IsComponentTypeDeclared<TComponent>())
                 {
                     world.GetAspect<Aspect>().pool.ClearAll();
