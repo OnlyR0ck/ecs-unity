@@ -11,7 +11,9 @@
         "DCFApixels.DragonECS.Unity",
         "DCFApixels.DragonECS",
         "DCFApixels.DragonECS.AutoInjections",
-        "DCFApixels.DragonECS.Threads"
+        "DCFApixels.DragonECS.Threads",
+        "DCFApixels.DebugX",
+        "DOTween.Modules"
     ],
     "includePlatforms": [
         "Android",

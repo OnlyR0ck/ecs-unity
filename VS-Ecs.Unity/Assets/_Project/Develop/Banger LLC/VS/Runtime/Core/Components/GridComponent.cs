@@ -7,6 +7,7 @@ namespace VS.Runtime.Core.Components
     {
         public GridView View;
         public CellView [,] Cells;
+        public bool StartIsEven;
     }
     
     public class GridComponentTemplate : ComponentTemplate<GridComponent>{}

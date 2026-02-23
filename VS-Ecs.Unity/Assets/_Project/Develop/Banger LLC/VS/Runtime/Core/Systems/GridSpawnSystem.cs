@@ -1,5 +1,6 @@
 using VS.Runtime.Services.Grid;
 using DCFApixels.DragonECS;
+using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
 using VS.Runtime.Core.Components;
 using VS.Runtime.Core.Enums;
@@ -82,6 +83,7 @@ namespace VS.Runtime.Core.Systems
             {
                 ref GridComponent grid = ref aspect.Grids.Get(entity);
                 grid.Cells = views;
+                grid.StartIsEven = _params.Config.StartIsEven;
                 _gridModel.Initialize(ref grid);
             }
         }

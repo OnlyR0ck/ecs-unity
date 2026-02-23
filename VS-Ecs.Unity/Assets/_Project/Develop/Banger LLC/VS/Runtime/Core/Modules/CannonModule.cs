@@ -1,4 +1,5 @@
 using DCFApixels.DragonECS;
+using Unity.IL2CPP.CompilerServices;
 using VContainer;
 using VS.Runtime.Core.Systems;
 using VS.Runtime.Extensions;

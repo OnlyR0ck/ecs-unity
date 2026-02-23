@@ -1,7 +1,9 @@
+using System;
 using DCFApixels.DragonECS;
 
 namespace VS.Runtime.Core.Components
 {
+    [Serializable]
     public struct AutoDestroy : IEcsComponent
     {
         public float TimeToDestroy;
@@ -11,4 +13,7 @@ namespace VS.Runtime.Core.Components
             TimeToDestroy = timeToDestroy;
         }
     }
+    
+    [Serializable]
+    public class AutoDestroyComponentTemplate : ComponentTemplate<AutoDestroy>{} 
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using VS.Runtime.Services.Input;
 using DCFApixels.DragonECS;
+using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
 using VS.Core.Configs.Features;
 using VS.Runtime.Core.Components;
@@ -8,7 +9,6 @@ using VS.Runtime.Core.Constants;
 using VS.Runtime.Core.Enums;
 using VS.Runtime.Core.Views;
 using VS.Runtime.Test;
-using VS.Runtime.Utilities;
 using Object = UnityEngine.Object;
 
 namespace VS.Runtime.Core.Systems
@@ -22,15 +22,6 @@ namespace VS.Runtime.Core.Systems
         private sealed class CannonAspect : EcsAspect
         {
             public EcsPool<Cannon> Cannons = Inc;
-        }
-
-        #if ENABLE_IL2CPP
-        [Il2CppSetOption(Option.NullChecks, false)]
-        [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
-        #endif
-        private class AimLineAspect : EcsAspect
-        {
-            public EcsPool<AimLine> AimLines = Inc;
         }
         
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");

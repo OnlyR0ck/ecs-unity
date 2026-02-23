@@ -1,4 +1,5 @@
 using DCFApixels.DragonECS;
+using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
 using UnityEngine.Rendering;
 using VContainer;
@@ -18,7 +19,7 @@ namespace VS.Runtime.Core.Systems
             public EcsPool<UnityComponent<Transform>> Transforms = Inc;
             
         }
-        private readonly CommandBuffer _buffer = new();
+        
         private readonly EcsDefaultWorld _world;
 
         [Inject]

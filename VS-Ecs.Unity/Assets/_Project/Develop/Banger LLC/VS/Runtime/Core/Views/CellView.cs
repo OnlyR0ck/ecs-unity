@@ -9,12 +9,16 @@ namespace VS.Runtime.Core.Views
         [field: SerializeField, ReadOnly] public Vector2Int Coord { get; private set; }
         [field: SerializeField, ReadOnly] public ECellState State { get; private set; }
         [field: SerializeField, ReadOnly] public BoxCollider2D Collider { get; private set; }
+        public View Content { get; private set; }
 
         public void SetState(ECellState state)
         {
             State = state;
             Collider.enabled = state == ECellState.Occupied;
         }
+
+        public void SetContent(View content) => 
+            Content = content;
 
         public void SetCoord(Vector2Int coord) => 
             Coord = coord;
