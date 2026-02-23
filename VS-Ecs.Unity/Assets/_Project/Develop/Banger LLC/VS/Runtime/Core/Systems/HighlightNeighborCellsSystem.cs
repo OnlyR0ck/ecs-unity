@@ -12,6 +12,7 @@ using VS.Runtime.Test;
 
 namespace VS.Runtime.Core.Systems
 {
+    //Was using for debugging purposes
     public sealed class HighlightNeighborCellsSystem : IEcsRun, IEcsInit
     {
         #if ENABLE_IL2CPP

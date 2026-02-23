@@ -1,9 +1,6 @@
 using VS.Runtime.Services;
-using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
 using VContainer.Unity;
-using VS.Runtime.Bootstrap.Units;
-using VS.Runtime.Utilities;
 
 namespace VS.Runtime.Bootstrap
 {
@@ -12,7 +9,7 @@ namespace VS.Runtime.Bootstrap
         private readonly SceneService _sceneService;
         private readonly LifetimeScope _parent;
 
-        public BootstrapFlow(LoadingService loadingService, SceneService sceneService, LifetimeScope parent)
+        public BootstrapFlow(SceneService sceneService, LifetimeScope parent)
         {
             _parent = parent;
             _sceneService = sceneService;

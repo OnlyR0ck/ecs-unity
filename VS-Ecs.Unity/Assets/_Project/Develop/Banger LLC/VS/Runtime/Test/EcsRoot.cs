@@ -35,6 +35,7 @@ namespace VS.Runtime.Test
                 .Add(_objectResolver.Instantiate<MoveAlongPathSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<CleanUpSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<ProjectileReplacementSystem>(Lifetime.Transient))
+                .Add(_objectResolver.Instantiate<RippleEffectSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<DropAndPopSystem>(Lifetime.Transient))
                 // .Add(_objectResolver.Instantiate<HighlightNeighborCellsSystem>(Lifetime.Transient))
                 .AutoDel<RefreshFieldEvent>();

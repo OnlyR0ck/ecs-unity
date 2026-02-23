@@ -1,13 +1,22 @@
-﻿using VS.Runtime.Services;
+﻿using System;
+using DCFApixels.DragonECS;
+using VContainer;
+using VS.Runtime.Services;
 using VContainer.Unity;
-using VS.Runtime.Utilities;
+using VS.Runtime.Core.Components.OneFrameComponents.Events;
+using VS.Runtime.Core.Modules;
+using VS.Runtime.Core.Systems;
+using VS.Runtime.Extensions;
 
 namespace VS.Runtime.Core
 {
-    public class CoreFlow : IStartable
+    public class CoreFlow : IInitializable, IDisposable, ITickable, IFixedTickable, ILateTickable
     {
         private readonly LoadingService _loadingService;
         private readonly SceneService _sceneService;
+        private EcsPipeline _pipeline;
+        private EcsDefaultWorld _world;
+        private readonly IObjectResolver _objectResolver;
 
         public CoreFlow(LoadingService loadingService, SceneService sceneService)
         {
@@ -15,9 +24,39 @@ namespace VS.Runtime.Core
             _sceneService = sceneService;
         }
 
-        public async void Start()
+        public void Initialize()
         {
-            
+            EcsPipeline.Builder builder = EcsPipeline.New();
+
+            //I'm registering systems as transient to prevent access from one system to other
+            builder.Inject(_world)
+                .Add(_objectResolver.Instantiate<GridSpawnSystem>(Lifetime.Transient))
+                .Add(_objectResolver.Instantiate<SpawnFieldSystem>(Lifetime.Transient))
+                .Add(_objectResolver.Instantiate<CannonModule>(Lifetime.Transient))
+                .Add(_objectResolver.Instantiate<MoveAlongPathSystem>(Lifetime.Transient))
+                .Add(_objectResolver.Instantiate<CleanUpSystem>(Lifetime.Transient))
+                .Add(_objectResolver.Instantiate<ProjectileReplacementSystem>(Lifetime.Transient))
+                .Add(_objectResolver.Instantiate<RippleEffectSystem>(Lifetime.Transient))
+                .Add(_objectResolver.Instantiate<DropAndPopSystem>(Lifetime.Transient))
+                // .Add(_objectResolver.Instantiate<HighlightNeighborCellsSystem>(Lifetime.Transient))
+                .AutoDel<RefreshFieldEvent>();
+
+
+            _pipeline = builder.BuildAndInit();
+        }
+
+        public void FixedTick() => _pipeline.FixedRun();
+
+        public void Tick() => _pipeline.Run();
+
+        public void LateTick() => _pipeline.LateRun();
+
+        public void Dispose()
+        {
+            _pipeline.Destroy();
+            _pipeline = null;
+            _world.Destroy();
+            _world = null;
         }
     }
 }
