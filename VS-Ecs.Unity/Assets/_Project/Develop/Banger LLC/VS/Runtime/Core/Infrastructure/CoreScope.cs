@@ -36,7 +36,7 @@ namespace VS.Runtime.Core
             builder.Register<InputService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<GridParamsService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.RegisterInstance(new EcsDefaultWorld());
-            builder.RegisterEntryPoint<EcsRoot>();
+            //builder.RegisterEntryPoint<EcsRoot>();
             builder.RegisterEntryPoint<CoreFlow>();
         }
     }

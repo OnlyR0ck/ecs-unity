@@ -1,15 +1,19 @@
+using UnityEngine;
+using UnityEngine.EventSystems;
 using VS.Runtime.Services;
 using VContainer;
 using VContainer.Unity;
-using VS.Runtime.Utilities;
 
 namespace VS.Runtime.Bootstrap
 {
     public sealed class BootstrapScope : LifetimeScope
     {
+        [SerializeField] private EventSystem _eventSystem;
+        
         protected override void Awake()
         {
             DontDestroyOnLoad(this);
+            DontDestroyOnLoad(_eventSystem);
             base.Awake();
         }
 

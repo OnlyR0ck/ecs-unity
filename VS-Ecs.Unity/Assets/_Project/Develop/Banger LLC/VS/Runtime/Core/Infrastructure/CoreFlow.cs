@@ -18,10 +18,12 @@ namespace VS.Runtime.Core
         private EcsDefaultWorld _world;
         private readonly IObjectResolver _objectResolver;
 
-        public CoreFlow(LoadingService loadingService, SceneService sceneService)
+        public CoreFlow(LoadingService loadingService, SceneService sceneService, IObjectResolver objectResolver, EcsDefaultWorld world)
         {
             _loadingService = loadingService;
             _sceneService = sceneService;
+            _objectResolver = objectResolver;
+            _world = world;
         }
 
         public void Initialize()
