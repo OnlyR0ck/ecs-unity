@@ -13,7 +13,9 @@
         "DCFApixels.DragonECS.AutoInjections",
         "DCFApixels.DragonECS.Threads",
         "DCFApixels.DebugX",
-        "DOTween.Modules"
+        "LitMotion",
+        "LitMotion.Extensions",
+        "LitMotion.Editor"
     ],
     "includePlatforms": [
         "Android",
