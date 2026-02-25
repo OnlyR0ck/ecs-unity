@@ -6,7 +6,6 @@
         "UEPT.Backend",
         "UniTask",
         "VContainer",
-        "Stateless",
         "Pool",
         "DCFApixels.DragonECS.Unity",
         "DCFApixels.DragonECS",

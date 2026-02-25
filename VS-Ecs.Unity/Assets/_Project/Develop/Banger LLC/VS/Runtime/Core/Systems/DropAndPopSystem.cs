@@ -7,6 +7,7 @@ using UnityEngine;
 using VContainer;
 using VS.Core.Configs.Features;
 using VS.Runtime.Core.Components.OneFrameComponents.Events;
+using VS.Runtime.Core.Components.StateMachine;
 using VS.Runtime.Core.Enums;
 using VS.Runtime.Core.Models;
 using VS.Runtime.Core.Views;
@@ -55,10 +56,13 @@ namespace VS.Runtime.Core.Systems
                 if (indices.Count < _config.BubblesToPop)
                     continue;
                 
+                ref var pending = ref _world.Get<PendingAnimations>();
+                
                 int iter = 0;
                 foreach (Vector2Int i in indices)
                 {
                     var cell = _gridModel[i];
+                    pending.Count++;
                     PopBubble(cell, iter).Forget();
                     iter++;
                 }
@@ -71,10 +75,15 @@ namespace VS.Runtime.Core.Systems
                     cell.SetState(ECellState.Free);
                     cell.SetContent(null);
                     
+                    pending.Count++;
                     LMotion.Create(0, -20.0f, 0.5f)
                         .WithDelay(0.05f * iter)
-                        .WithEase(LitMotion.Ease.InSine)
-                        .WithOnComplete(() => Object.Destroy(content))
+                        .WithEase(Ease.InSine)
+                        .WithOnComplete(() => {
+                            Object.Destroy(content);
+                            ref var p = ref _world.Get<PendingAnimations>();
+                            p.Count--;
+                        })
                         .BindToLocalPositionY(content.transform)
                         .AddTo(content);
                     
@@ -90,6 +99,8 @@ namespace VS.Runtime.Core.Systems
             cell.SetContent(null);
             await UniTask.Delay(100 * iter);
             Object.Destroy(content);
+            
+            _world.Get<PendingAnimations>().Count--;
         }
     }
 }

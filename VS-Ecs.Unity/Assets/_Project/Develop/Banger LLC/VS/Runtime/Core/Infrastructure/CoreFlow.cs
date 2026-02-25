@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using DCFApixels.DragonECS;
 using VContainer;
 using VS.Runtime.Services;
 using VContainer.Unity;
 using VS.Runtime.Core.Components.OneFrameComponents.Events;
 using VS.Runtime.Core.Modules;
+using VS.Runtime.Core.Components.StateMachine;
 using VS.Runtime.Core.Systems;
 using VS.Runtime.Extensions;
 
@@ -28,6 +29,9 @@ namespace VS.Runtime.Core
 
         public void Initialize()
         {
+            // Initialize world components
+            _world.Get<PendingAnimations>();
+
             EcsPipeline.Builder builder = EcsPipeline.New();
 
             //I'm registering systems as transient to prevent access from one system to other
@@ -40,8 +44,11 @@ namespace VS.Runtime.Core
                 .Add(_objectResolver.Instantiate<ProjectileReplacementSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<RippleEffectSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<DropAndPopSystem>(Lifetime.Transient))
-                // .Add(_objectResolver.Instantiate<HighlightNeighborCellsSystem>(Lifetime.Transient))
-                .AutoDel<RefreshFieldEvent>();
+                .Add(_objectResolver.Instantiate<FieldSettleCheckSystem>(Lifetime.Transient))
+                .Add(_objectResolver.Instantiate<GameStateMachineSystem>(Lifetime.Transient))
+                .AutoDel<RefreshFieldEvent>()
+                .AutoDel<ShotLandedEvent>()
+                .AutoDel<FieldSettledEvent>();
 
 
             _pipeline = builder.BuildAndInit();
