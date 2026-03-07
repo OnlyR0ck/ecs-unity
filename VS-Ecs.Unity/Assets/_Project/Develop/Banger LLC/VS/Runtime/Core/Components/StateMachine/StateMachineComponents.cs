@@ -13,6 +13,13 @@ namespace VS.Runtime.Core.Components.StateMachine
         Result = 5
     }
 
+    public enum EGameEndReason
+    {
+        TimeIsUp = 0,
+        BoardIsFull = 1,
+        BoardIsCleaned = 2
+    }
+
     [Serializable]
     public struct GameStateMachine : IEcsComponent
     {
@@ -24,11 +31,4 @@ namespace VS.Runtime.Core.Components.StateMachine
     public struct ShootingPhaseTag : IEcsComponent { }
     public struct FieldProcessingPhaseTag : IEcsComponent { }
     public struct ResultPhaseTag : IEcsComponent { }
-
-    public struct PendingAnimations : IEcsWorldComponent<PendingAnimations>
-    {
-        public int Count;
-        public void Init(ref PendingAnimations component, EcsWorld world) { component.Count = 0; }
-        public void OnDestroy(ref PendingAnimations component, EcsWorld world) { }
-    }
 }
