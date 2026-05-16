@@ -38,6 +38,9 @@ namespace VS.Runtime.Core
 
             //I'm registering systems as transient to prevent access from one system to other
             builder.Inject(_world)
+                #if UNITY_EDITOR
+                .AddUnityDebug()
+                #endif
                 .Add(_objectResolver.Instantiate<GridSpawnSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<SpawnFieldSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<CannonModule>(Lifetime.Transient))
@@ -57,7 +60,7 @@ namespace VS.Runtime.Core
                 .AutoDel<BubblesPoppedEvent>()
                 .AutoDel<BubblesDroppedEvent>();
 
-
+            
             _pipeline = builder.BuildAndInit();
         }
 

@@ -1,8 +1,10 @@
 using DCFApixels.DragonECS;
+using UnityEngine;
 using VContainer;
 using VS.Core.Configs.Features;
 using VS.Runtime.Core.Components;
 using VS.Runtime.Core.Components.OneFrameComponents.Events;
+using VS.Runtime.Utilities.Logging;
 
 #if ENABLE_IL2CPP
 using Unity.IL2CPP.CompilerServices;
@@ -49,12 +51,15 @@ namespace VS.Runtime.Core.Systems
                 int n = poppedAspect.Events.Get(entity).Count;
                 // sum(base + i*increment, i=0..n-1) = n*base + increment*(n*(n-1)/2)
                 score.Total += n * _config.PopScoreBase + _config.PopScoreIncrement * (n * (n - 1) / 2);
+                
+                Log.Default.D($"Score: {score.Total}");
             }
 
             foreach (var entity in _world.Where(out DroppedAspect droppedAspect))
             {
                 int n = droppedAspect.Events.Get(entity).Count;
                 score.Total += n * _config.DropScorePerBubble;
+                Log.Default.D($"Score: {score.Total}");
             }
         }
     }
