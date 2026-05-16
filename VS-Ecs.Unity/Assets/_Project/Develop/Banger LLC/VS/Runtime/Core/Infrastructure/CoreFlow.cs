@@ -13,13 +13,13 @@ namespace VS.Runtime.Core
 {
     public class CoreFlow : IInitializable, IDisposable, ITickable, IFixedTickable, ILateTickable
     {
-        private readonly LoadingService _loadingService;
-        private readonly SceneService _sceneService;
+        private readonly ILoadingService _loadingService;
+        private readonly ISceneService _sceneService;
         private EcsPipeline _pipeline;
         private EcsDefaultWorld _world;
         private readonly IObjectResolver _objectResolver;
 
-        public CoreFlow(LoadingService loadingService, SceneService sceneService, IObjectResolver objectResolver, EcsDefaultWorld world)
+        public CoreFlow(ILoadingService loadingService, ISceneService sceneService, IObjectResolver objectResolver, EcsDefaultWorld world)
         {
             _loadingService = loadingService;
             _sceneService = sceneService;
@@ -44,6 +44,8 @@ namespace VS.Runtime.Core
                 .Add(_objectResolver.Instantiate<ProjectileReplacementSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<RippleEffectSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<DropAndPopSystem>(Lifetime.Transient))
+                .Add(_objectResolver.Instantiate<TimerTickSystem>(Lifetime.Transient))
+                .Add(_objectResolver.Instantiate<EndGameConditionCheckSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<FieldSettleCheckSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<GameStateMachineSystem>(Lifetime.Transient))
                 .AutoDel<RefreshFieldEvent>()

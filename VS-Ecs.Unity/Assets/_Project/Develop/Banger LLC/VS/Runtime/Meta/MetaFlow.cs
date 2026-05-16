@@ -2,16 +2,15 @@
 using Cysharp.Threading.Tasks;
 using VContainer.Unity;
 using VS.Runtime.Bootstrap.Units;
-using VS.Runtime.Utilities;
 
 namespace VS.Runtime.Meta
 {
     public class MetaFlow : IStartable
     {
-        private readonly LoadingService _loadingService;
-        private readonly SceneService _sceneService;
+        private readonly ILoadingService _loadingService;
+        private readonly ISceneService _sceneService;
 
-        public MetaFlow(LoadingService loadingService, SceneService sceneService)
+        public MetaFlow(ILoadingService loadingService, ISceneService sceneService)
         {
             _loadingService = loadingService;
             _sceneService = sceneService;

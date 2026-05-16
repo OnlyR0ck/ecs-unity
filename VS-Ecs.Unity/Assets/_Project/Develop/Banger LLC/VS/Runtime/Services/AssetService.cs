@@ -2,6 +2,8 @@
 
 namespace VS.Runtime.Services
 {
+    
+    //TODO:temp solution
     public static class AssetService
     {
         public static Resources R { get; } = new();

@@ -191,6 +191,7 @@ MonoBehaviour:
   _shootingConfig: {fileID: 11400000, guid: 2b8f5086867eb492ab0d53ccce7fd88d, type: 2}
   _gridSettingsConfig: {fileID: 11400000, guid: 4cf6445c993af4755925565df1c96e97, type: 2}
   _gameplayRulesConfig: {fileID: 11400000, guid: 5751816da3049499da0fa0e33d486c7f, type: 2}
+  _sessionSettingsConfig: {fileID: 11400000, guid: 17c5fa52ba5cf48b483b321ec2211044, type: 2}
   _inputHandler: {fileID: 4602340311610970921}
   _refs: {fileID: 1202160333877432493}
   _levelView: {fileID: 1813649382}

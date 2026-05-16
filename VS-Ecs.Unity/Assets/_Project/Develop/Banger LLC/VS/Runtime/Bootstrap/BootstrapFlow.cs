@@ -6,10 +6,10 @@ namespace VS.Runtime.Bootstrap
 {
     public class BootstrapFlow : IStartable
     {
-        private readonly SceneService _sceneService;
+        private readonly ISceneService _sceneService;
         private readonly LifetimeScope _parent;
 
-        public BootstrapFlow(SceneService sceneService, LifetimeScope parent)
+        public BootstrapFlow(ISceneService sceneService, LifetimeScope parent)
         {
             _parent = parent;
             _sceneService = sceneService;

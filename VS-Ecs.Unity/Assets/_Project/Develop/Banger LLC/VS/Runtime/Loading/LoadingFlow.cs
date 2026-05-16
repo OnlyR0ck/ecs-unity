@@ -1,19 +1,15 @@
 ﻿using VS.Runtime.Services;
 using Cysharp.Threading.Tasks;
 using VContainer.Unity;
-using VS.Runtime.Bootstrap.Units;
-using VS.Runtime.Utilities;
 
 namespace VS.Runtime.Loading
 {
     public class LoadingFlow : IStartable
     {
-        private readonly LoadingService _loadingService;
-        private readonly SceneService _sceneService;
+        private readonly ISceneService _sceneService;
 
-        public LoadingFlow(LoadingService loadingService, SceneService sceneService)
+        public LoadingFlow(ISceneService sceneService)
         {
-            _loadingService = loadingService;
             _sceneService = sceneService;
         }
 

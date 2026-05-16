@@ -21,7 +21,7 @@ namespace VS.Runtime.Services
 
     public interface IDisposableLoadUnit<in T> : ILoadUnit<T>, IDisposable { }
 
-    public sealed class LoadingService
+    public sealed class LoadingService : ILoadingService
     {
         private readonly Stopwatch _watch =
 #if !COMPANYNAME_PROD
