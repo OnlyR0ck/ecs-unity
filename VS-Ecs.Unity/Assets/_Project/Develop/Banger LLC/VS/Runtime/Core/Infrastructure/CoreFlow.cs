@@ -3,6 +3,7 @@ using DCFApixels.DragonECS;
 using VContainer;
 using VS.Runtime.Services;
 using VContainer.Unity;
+using VS.Runtime.Core.Components;
 using VS.Runtime.Core.Components.OneFrameComponents.Events;
 using VS.Runtime.Core.Modules;
 using VS.Runtime.Core.Components.StateMachine;
@@ -31,6 +32,7 @@ namespace VS.Runtime.Core
         {
             // Initialize world components
             _world.Get<PendingAnimations>();
+            _world.Get<Score>();
 
             EcsPipeline.Builder builder = EcsPipeline.New();
 
@@ -44,13 +46,16 @@ namespace VS.Runtime.Core
                 .Add(_objectResolver.Instantiate<ProjectileReplacementSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<RippleEffectSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<DropAndPopSystem>(Lifetime.Transient))
+                .Add(_objectResolver.Instantiate<ScoreSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<TimerTickSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<EndGameConditionCheckSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<FieldSettleCheckSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<GameStateMachineSystem>(Lifetime.Transient))
                 .AutoDel<RefreshFieldEvent>()
                 .AutoDel<ShotLandedEvent>()
-                .AutoDel<FieldSettledEvent>();
+                .AutoDel<FieldSettledEvent>()
+                .AutoDel<BubblesPoppedEvent>()
+                .AutoDel<BubblesDroppedEvent>();
 
 
             _pipeline = builder.BuildAndInit();

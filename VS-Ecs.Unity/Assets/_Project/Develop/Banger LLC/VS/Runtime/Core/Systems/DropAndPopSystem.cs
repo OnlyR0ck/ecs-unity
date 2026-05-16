@@ -47,7 +47,7 @@ namespace VS.Runtime.Core.Systems
         public void Run()
         {
             foreach (int entity in _world.Where(out EventAspect aspect))
-            { 
+            {
                 Vector2Int index = aspect.Events.Get(entity).Index;
 
                 HashSet<Vector2Int> indices = new HashSet<Vector2Int>();
@@ -55,9 +55,11 @@ namespace VS.Runtime.Core.Systems
 
                 if (indices.Count < _config.BubblesToPop)
                     continue;
-                
+
+                _world.GetPool<BubblesPoppedEvent>().TryAddOrGet(_world.NewEntity()).Count = indices.Count;
+
                 ref var pending = ref _world.Get<PendingAnimations>();
-                
+
                 int iter = 0;
                 foreach (Vector2Int i in indices)
                 {
@@ -68,13 +70,17 @@ namespace VS.Runtime.Core.Systems
                 }
 
                 IReadOnlyCollection<Vector2Int> unattached = _gridModel.GetUnattached();
+
+                if (unattached.Count > 0)
+                    _world.GetPool<BubblesDroppedEvent>().TryAddOrGet(_world.NewEntity()).Count = unattached.Count;
+
                 foreach (var i in unattached)
                 {
                     var cell = _gridModel[i];
                     GameObject content = cell.Content.gameObject;
                     cell.SetState(ECellState.Free);
                     cell.SetContent(null);
-                    
+
                     pending.Count++;
                     LMotion.Create(0, -20.0f, 0.5f)
                         .WithDelay(0.05f * iter)
@@ -86,11 +92,12 @@ namespace VS.Runtime.Core.Systems
                         })
                         .BindToLocalPositionY(content.transform)
                         .AddTo(content);
-                    
+
                     iter++;
                 }
             }
         }
+
 
         private async UniTaskVoid PopBubble(CellView cell, int iter)
         {
