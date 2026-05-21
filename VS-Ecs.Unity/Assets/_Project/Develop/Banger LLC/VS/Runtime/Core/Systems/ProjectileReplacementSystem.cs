@@ -60,6 +60,9 @@ namespace VS.Runtime.Core.Systems
                 int refreshFieldEventEntity = _world.NewEntity();
                 ref RefreshFieldEvent fieldEvent = ref _world.GetPool<RefreshFieldEvent>().TryAddOrGet(refreshFieldEventEntity);
                 fieldEvent.Index = index;
+
+                int shotLandedEventEntity = _world.NewEntity();
+                _world.GetPool<ShotLandedEvent>().Add(shotLandedEventEntity);
             }
         }
     }

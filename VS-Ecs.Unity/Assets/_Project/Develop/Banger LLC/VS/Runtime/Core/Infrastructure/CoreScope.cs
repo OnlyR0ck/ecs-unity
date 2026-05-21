@@ -19,16 +19,18 @@ namespace VS.Runtime.Core
         [SerializeField] private ShootingConfig _shootingConfig;
         [SerializeField] private GridSettingsConfig _gridSettingsConfig;
         [SerializeField] private GameplayRulesConfig _gameplayRulesConfig;
+        [SerializeField] private SessionSettingsConfig _sessionSettingsConfig;
         [SerializeField] private InputHandlerService _inputHandler;
         [SerializeField] private CoreGameSceneRefs _refs;
         [SerializeField] private LevelView _levelView;
-        
+
         protected override void Configure(IContainerBuilder builder)
         {
             builder.RegisterInstance(_resourcesContainer);
             builder.RegisterInstance(_shootingConfig);
             builder.RegisterInstance(_gridSettingsConfig);
             builder.RegisterInstance(_gameplayRulesConfig);
+            builder.RegisterInstance(_sessionSettingsConfig);
             builder.RegisterInstance(_inputHandler);
             builder.RegisterInstance(_refs).As<ICoreGameSceneRefs>();
             builder.RegisterInstance(_levelView).As<ILevel>();

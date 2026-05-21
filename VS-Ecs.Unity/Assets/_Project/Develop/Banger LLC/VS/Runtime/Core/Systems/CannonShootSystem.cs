@@ -12,6 +12,7 @@ using VS.Runtime.Extensions;
 using VS.Runtime.Services.Grid;
 using VS.Runtime.Test;
 using VS.Runtime.Utilities.Debug;
+using VS.Runtime.Core.Components.StateMachine;
 
 #if ENABLE_IL2CPP
 using Unity.IL2CPP.CompilerServices;
@@ -188,10 +189,12 @@ namespace VS.Runtime.Core.Systems
                 currentReflection++;
             }
         }
-
-        //for now, it's always allowed
+        
         private bool IsAllowedToShoot()
         {
+            if (_world.GetPool<ShootingPhaseTag>().Count == 0)
+                return false;
+
             foreach (var _ in _world.Where(out FlyingProjectileAspect _))
             {
                 return false;

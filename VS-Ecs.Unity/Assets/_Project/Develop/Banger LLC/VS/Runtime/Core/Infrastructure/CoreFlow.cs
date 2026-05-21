@@ -1,10 +1,12 @@
-﻿using System;
+using System;
 using DCFApixels.DragonECS;
 using VContainer;
 using VS.Runtime.Services;
 using VContainer.Unity;
+using VS.Runtime.Core.Components;
 using VS.Runtime.Core.Components.OneFrameComponents.Events;
 using VS.Runtime.Core.Modules;
+using VS.Runtime.Core.Components.StateMachine;
 using VS.Runtime.Core.Systems;
 using VS.Runtime.Extensions;
 
@@ -12,13 +14,13 @@ namespace VS.Runtime.Core
 {
     public class CoreFlow : IInitializable, IDisposable, ITickable, IFixedTickable, ILateTickable
     {
-        private readonly LoadingService _loadingService;
-        private readonly SceneService _sceneService;
+        private readonly ILoadingService _loadingService;
+        private readonly ISceneService _sceneService;
         private EcsPipeline _pipeline;
         private EcsDefaultWorld _world;
         private readonly IObjectResolver _objectResolver;
 
-        public CoreFlow(LoadingService loadingService, SceneService sceneService, IObjectResolver objectResolver, EcsDefaultWorld world)
+        public CoreFlow(ILoadingService loadingService, ISceneService sceneService, IObjectResolver objectResolver, EcsDefaultWorld world)
         {
             _loadingService = loadingService;
             _sceneService = sceneService;
@@ -28,10 +30,17 @@ namespace VS.Runtime.Core
 
         public void Initialize()
         {
+            // Initialize world components
+            _world.Get<PendingAnimations>();
+            _world.Get<Score>();
+
             EcsPipeline.Builder builder = EcsPipeline.New();
 
             //I'm registering systems as transient to prevent access from one system to other
             builder.Inject(_world)
+                #if UNITY_EDITOR
+                .AddUnityDebug()
+                #endif
                 .Add(_objectResolver.Instantiate<GridSpawnSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<SpawnFieldSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<CannonModule>(Lifetime.Transient))
@@ -40,10 +49,18 @@ namespace VS.Runtime.Core
                 .Add(_objectResolver.Instantiate<ProjectileReplacementSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<RippleEffectSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<DropAndPopSystem>(Lifetime.Transient))
-                // .Add(_objectResolver.Instantiate<HighlightNeighborCellsSystem>(Lifetime.Transient))
-                .AutoDel<RefreshFieldEvent>();
+                .Add(_objectResolver.Instantiate<ScoreSystem>(Lifetime.Transient))
+                .Add(_objectResolver.Instantiate<TimerTickSystem>(Lifetime.Transient))
+                .Add(_objectResolver.Instantiate<EndGameConditionCheckSystem>(Lifetime.Transient))
+                .Add(_objectResolver.Instantiate<FieldSettleCheckSystem>(Lifetime.Transient))
+                .Add(_objectResolver.Instantiate<GameStateMachineSystem>(Lifetime.Transient))
+                .AutoDel<RefreshFieldEvent>()
+                .AutoDel<ShotLandedEvent>()
+                .AutoDel<FieldSettledEvent>()
+                .AutoDel<BubblesPoppedEvent>()
+                .AutoDel<BubblesDroppedEvent>();
 
-
+            
             _pipeline = builder.BuildAndInit();
         }
 

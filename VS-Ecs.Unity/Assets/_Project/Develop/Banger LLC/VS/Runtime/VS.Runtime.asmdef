@@ -6,14 +6,15 @@
         "UEPT.Backend",
         "UniTask",
         "VContainer",
-        "Stateless",
         "Pool",
         "DCFApixels.DragonECS.Unity",
         "DCFApixels.DragonECS",
         "DCFApixels.DragonECS.AutoInjections",
         "DCFApixels.DragonECS.Threads",
         "DCFApixels.DebugX",
-        "DOTween.Modules"
+        "LitMotion",
+        "LitMotion.Extensions",
+        "LitMotion.Editor"
     ],
     "includePlatforms": [
         "Android",

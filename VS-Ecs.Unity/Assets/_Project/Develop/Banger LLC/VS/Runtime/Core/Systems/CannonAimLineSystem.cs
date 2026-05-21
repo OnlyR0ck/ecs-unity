@@ -9,6 +9,7 @@ using VS.Runtime.Core.Constants;
 using VS.Runtime.Core.Enums;
 using VS.Runtime.Core.Views;
 using VS.Runtime.Test;
+using VS.Runtime.Core.Components.StateMachine;
 using Object = UnityEngine.Object;
 
 namespace VS.Runtime.Core.Systems
@@ -138,7 +139,9 @@ namespace VS.Runtime.Core.Systems
         private void OnStartDrag_Handler(Vector2 _) => 
             SetAimLineActive(true);
 
-        private void OnEndDrag_Handler(Vector2 _) => 
+        private void OnEndDrag_Handler(Vector2 _)
+        {
             SetAimLineActive(false);
+        }
     }
 }
