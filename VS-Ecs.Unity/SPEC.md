@@ -54,14 +54,21 @@ T7|x|FieldSettleCheckSystem: detect settle → emit FieldSettledEvent|V4,V5
 T8|x|GameStateMachineSystem: phase FSM Bootstrap→PreStart→Shooting→FieldProcessing→Result|V5,V6
 T9|x|TimerTickSystem: register in CoreFlow pipeline|V8
 T10|x|EndGameConditionCheckSystem: register in CoreFlow pipeline & wire SessionEndTime|I.cfg.session,V8
-T11|.|EvaluateGameOver: return true when EndGameResult.Count > 0 (TimeIsUp scope only)|V9
+T11|x|EvaluateGameOver: return true when EndGameResult.Count > 0 (TimeIsUp scope only)|V9
 T12|.|ResultPhaseSystem: ResultDelayTime delay → show result overlay (win congrats \| lose score)|V10,V11,V12
 T13|.|HighlightNeighborCellsSystem: register in CoreFlow pipeline|-
-T14|.|SessionSettingsConfig: add ResultDelayTime field|I.cfg.session,V10
+T14|x|SessionSettingsConfig: add ResultDelayTime field|I.cfg.session,V10
 T15|x|GameplayRulesConfig: add PopScoreBase, PopScoreIncrement, DropScorePerBubble|I.cfg.gameplay
 T16|x|DropAndPopSystem: emit BubblesPoppedEvent{Count} + BubblesDroppedEvent{Count}|V15
 T17|x|ScoreSystem: accumulate Score world component from pop/drop events|V13,V14,V15
 T18|x|CoreFlow: register ScoreSystem in pipeline (after DropAndPopSystem)|I.pipeline
+
+## §Q OPEN QUESTIONS
+Q1: UI arch — MVP for all UI elements; View = pure Unity bindings, Presenter mediates ECS↔View
+  Q1a: Presenter↔ECS coupling — A) Presenter is VContainer ITickable, polls ECS (ECS unaware of UI) | B) ECS system injects Presenter & pushes data (simpler, ECS→UI coupling)
+  Q1b: View thickness — View = MonoBehaviour bindings only, zero logic?
+Q2: IPopup.OnClosed event — add now (enables future popup queue) or defer?
+Q3: result overlay is IPopup not IScreen (confirmed); IScreen = singleton full-screen, IPopup = stackable on top
 
 ## §B BUGS
 id|date|cause|fix
