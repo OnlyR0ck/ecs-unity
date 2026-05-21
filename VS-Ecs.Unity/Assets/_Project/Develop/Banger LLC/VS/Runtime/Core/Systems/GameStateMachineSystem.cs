@@ -1,4 +1,5 @@
 using DCFApixels.DragonECS;
+using VS.Runtime.Core.Components;
 using VS.Runtime.Core.Components.StateMachine;
 using VS.Runtime.Core.Components.OneFrameComponents.Events;
 using VS.Runtime.Utilities.Debug;
@@ -17,6 +18,7 @@ namespace VS.Runtime.Core.Systems
 
         private EcsPool<ShotLandedEvent> _shotLandedPool;
         private EcsPool<FieldSettledEvent> _fieldSettledPool;
+        private EcsPool<EndGameResult> _endGameResultPool;
 
         private class StateMachineAspect : EcsAspect
         {
@@ -39,6 +41,7 @@ namespace VS.Runtime.Core.Systems
 
             _shotLandedPool = _world.GetPool<ShotLandedEvent>();
             _fieldSettledPool = _world.GetPool<FieldSettledEvent>();
+            _endGameResultPool = _world.GetPool<EndGameResult>();
 
             // Create the state entity
             int entity = _world.NewEntity();
@@ -123,10 +126,6 @@ namespace VS.Runtime.Core.Systems
             }
         }
 
-        private bool EvaluateGameOver()
-        {
-            // Future implementation: check for win/lose conditions.
-            return false;
-        }
+        private bool EvaluateGameOver() => _endGameResultPool.Count > 0;
     }
 }

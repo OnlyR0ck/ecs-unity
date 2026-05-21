@@ -6,5 +6,6 @@ namespace VS.Core.Configs.Features
     public class SessionSettingsConfig : ScriptableObject
     {
         [field: SerializeField, Min(0)] public int SessionEndTime { get; private set; } = 180;
+        [field: SerializeField, Min(0f)] public float ResultDelayTime { get; private set; } = 2f;
     }
 }
