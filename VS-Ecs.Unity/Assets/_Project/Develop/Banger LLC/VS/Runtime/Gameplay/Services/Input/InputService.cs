@@ -63,7 +63,7 @@ namespace VS.Runtime.Services.Input
                 #if UNITY_EDITOR
                 currentPosition = UnityEngine.Input.mousePosition;
                 #elif UNITY_ANDROID || UNITY_IOS
-                currentPosition = Input.GetTouch(0).position;
+                currentPosition = UnityEngine.Input.GetTouch(0).position;
                 #endif
                 
                 OnDrag?.Invoke(GetWorldPosition(currentPosition));
