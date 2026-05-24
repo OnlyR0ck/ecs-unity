@@ -7,18 +7,18 @@ namespace VS.Runtime.Services.Session
     public class ScoreService : IScoreService
     {
         private readonly GameplayRulesConfig _config;
-        private readonly ISessionDataService _sessionData;
         private int _accumulated;
 
-        public ScoreService(GameplayRulesConfig config, ISessionDataService sessionData)
+        public int Total { get; private set; }
+
+        public ScoreService(GameplayRulesConfig config)
         {
             _config = config;
-            _sessionData = sessionData;
         }
 
         public void Add(int delta) => _accumulated += delta;
 
-        public void Finalize(EGameEndReason reason, int timeRemaining)
+        public void ComputeFinal(EGameEndReason reason, int timeRemaining)
         {
             int total = _accumulated;
 
@@ -30,7 +30,13 @@ namespace VS.Runtime.Services.Session
             if (reason == EGameEndReason.BoardIsCleaned)
                 total += _config.BoardClearBonus;
 
-            _sessionData.Score.Value = total;
+            Total = total;
+        }
+
+        public void Reset()
+        {
+            _accumulated = 0;
+            Total = 0;
         }
     }
 }

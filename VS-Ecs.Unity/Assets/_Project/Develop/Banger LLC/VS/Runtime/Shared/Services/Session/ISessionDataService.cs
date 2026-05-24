@@ -4,7 +4,9 @@ namespace VS.Runtime.Services.Session
 {
     public interface ISessionDataService
     {
-        ReactiveProperty<int> Score { get; }
+        ReadOnlyReactiveProperty<int> Score { get; }
+        bool IsGameEnded { get; }
+        void Snapshot();
         void Reset();
     }
 }
