@@ -9,6 +9,7 @@ using VS.Runtime.Core.Models;
 using VS.Runtime.Core.Views;
 using VS.Runtime.Services.Grid;
 using VS.Runtime.Services.Input;
+using VS.Runtime.Services.Session;
 using VS.Runtime.Test;
 
 namespace VS.Runtime.Core
@@ -34,6 +35,8 @@ namespace VS.Runtime.Core
             builder.RegisterInstance(_inputHandler);
             builder.RegisterInstance(_refs).As<ICoreGameSceneRefs>();
             builder.RegisterInstance(_levelView).As<ILevel>();
+            builder.Register<SessionDataService>(Lifetime.Singleton).As<ISessionDataService>();
+            builder.Register<ScoreService>(Lifetime.Singleton).As<IScoreService>();
             builder.Register<GridModel>(Lifetime.Singleton);
             builder.Register<InputService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<GridParamsService>(Lifetime.Singleton).AsImplementedInterfaces();

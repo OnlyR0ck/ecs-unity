@@ -1,10 +1,8 @@
 using DCFApixels.DragonECS;
-using UnityEngine;
 using VContainer;
 using VS.Core.Configs.Features;
-using VS.Runtime.Core.Components;
 using VS.Runtime.Core.Components.OneFrameComponents.Events;
-using VS.Runtime.Utilities.Logging;
+using VS.Runtime.Services.Session;
 
 #if ENABLE_IL2CPP
 using Unity.IL2CPP.CompilerServices;
@@ -34,32 +32,28 @@ namespace VS.Runtime.Core.Systems
 
         private readonly EcsDefaultWorld _world;
         private readonly GameplayRulesConfig _config;
+        private readonly IScoreService _scoreService;
 
         [Inject]
-        public ScoreSystem(EcsDefaultWorld world, GameplayRulesConfig config)
+        public ScoreSystem(EcsDefaultWorld world, GameplayRulesConfig config, IScoreService scoreService)
         {
             _world = world;
             _config = config;
+            _scoreService = scoreService;
         }
 
         public void Run()
         {
-            ref var score = ref _world.Get<Score>();
-
             foreach (var entity in _world.Where(out PoppedAspect poppedAspect))
             {
                 int n = poppedAspect.Events.Get(entity).Count;
-                // sum(base + i*increment, i=0..n-1) = n*base + increment*(n*(n-1)/2)
-                score.Total += n * _config.PopScoreBase + _config.PopScoreIncrement * (n * (n - 1) / 2);
-                
-                Log.Default.D($"Score: {score.Total}");
+                _scoreService.Add(n * _config.PopScoreBase + _config.PopScoreIncrement * (n * (n - 1) / 2));
             }
 
             foreach (var entity in _world.Where(out DroppedAspect droppedAspect))
             {
                 int n = droppedAspect.Events.Get(entity).Count;
-                score.Total += n * _config.DropScorePerBubble;
-                Log.Default.D($"Score: {score.Total}");
+                _scoreService.Add(n * _config.DropScorePerBubble);
             }
         }
     }

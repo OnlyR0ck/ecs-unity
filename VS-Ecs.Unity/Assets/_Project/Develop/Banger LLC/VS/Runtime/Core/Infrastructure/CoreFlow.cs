@@ -3,7 +3,6 @@ using DCFApixels.DragonECS;
 using VContainer;
 using VS.Runtime.Services;
 using VContainer.Unity;
-using VS.Runtime.Core.Components;
 using VS.Runtime.Core.Components.OneFrameComponents.Events;
 using VS.Runtime.Core.Modules;
 using VS.Runtime.Core.Components.StateMachine;
@@ -32,7 +31,6 @@ namespace VS.Runtime.Core
         {
             // Initialize world components
             _world.Get<PendingAnimations>();
-            _world.Get<Score>();
 
             EcsPipeline.Builder builder = EcsPipeline.New();
 
