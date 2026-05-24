@@ -14,7 +14,8 @@
         "DCFApixels.DebugX",
         "LitMotion",
         "LitMotion.Extensions",
-        "LitMotion.Editor"
+        "LitMotion.Editor",
+        "LightSide.UniText"
     ],
     "includePlatforms": [
         "Android",

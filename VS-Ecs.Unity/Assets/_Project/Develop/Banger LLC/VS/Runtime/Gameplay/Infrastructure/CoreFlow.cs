@@ -8,6 +8,7 @@ using VS.Runtime.Core.Modules;
 using VS.Runtime.Core.Components.StateMachine;
 using VS.Runtime.Core.Systems;
 using VS.Runtime.Extensions;
+using VS.Runtime.Core.UI;
 
 namespace VS.Runtime.Core
 {
@@ -52,6 +53,7 @@ namespace VS.Runtime.Core
                 .Add(_objectResolver.Instantiate<EndGameConditionCheckSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<FieldSettleCheckSystem>(Lifetime.Transient))
                 .Add(_objectResolver.Instantiate<GameStateMachineSystem>(Lifetime.Transient))
+                .Add(_objectResolver.Instantiate<ResultPhaseSystem>(Lifetime.Transient))
                 .AutoDel<RefreshFieldEvent>()
                 .AutoDel<ShotLandedEvent>()
                 .AutoDel<FieldSettledEvent>()
