@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 423f2556567bf44a2b69b544f467ecb2, type: 3}
+  m_Name: PopupSourceConfig
+  m_EditorClassIdentifier: UEPT.Runtime::VS.Core.Configs.Features.PopupSourceConfig
+  _prefabs:
+  - {fileID: 6618137497770765578, guid: 173afff28d523428aa77a34ea0bca854, type: 3}
+  - {fileID: 6419815950388851280, guid: ac8dd72dc4efa4e5690b3a96de7b1a02, type: 3}
