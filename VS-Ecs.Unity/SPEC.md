@@ -19,20 +19,23 @@ Bubble-shooter (VS): player fires colored bubbles at hex grid; match ≥N same-c
 - input: `IInputService.OnEndDrag(Vector2)` → shot trigger
 - grid: `IGridParamsService.Params` → `GridParams` (CellSize, Rows, Columns, StartOffset, StartIsEven, VisibleRows)
 - level: `ILevel.GridSpawnRoot` — spawn parent transform
-- scene: `ICoreGameSceneRefs.GameCamera`
+- scene: `ICoreGameSceneRefs.GameCamera`; `ISceneService.SetSceneEnabled(int sceneIndex, bool enabled)` — calls `SetActive(enabled)` on ∀ root GOs in loaded scene; no-op if scene not loaded
 - pipeline: `CoreFlow` registers ∀ ECS systems; drives `EcsPipeline.Run()` each `Tick()`
 - cfg.gameplay: `GameplayRulesConfig.BubblesToPop` (int ≥2, default 3) + `PopScoreBase` (int) + `PopScoreIncrement` (int) + `DropScorePerBubble` (int) + `TimeBonusA` (float) + `TimeBonusB` (float) + `TimeBonusC` (float) + `BoardClearBonus` (int)
 - session: `ISessionDataService` — read-only snapshot surface; `Score: ReadOnlyReactiveProperty<int>`; `IsGameEnded: bool`; `Snapshot()` pulls from all registered sources (currently `IScoreService.Total`) + sets `IsGameEnded=true`; `Reset()` clears all; no external direct writes (V19)
 - score: `IScoreService` — accumulator; `Add(int delta)` during gameplay; `ComputeFinal(EGameEndReason, int timeRemaining)` → applies bonuses, stores in `Total`; `int Total` readable after `ComputeFinal`; `Reset()` on session start
-- ui: `IPopupService` — `Show<TView>()`, `Hide<TView>()`, `HideAll()`; TView : Popup; VContainer injects ViewModel at instantiation (⊥ caller); `Show` while open → no-op
+- ui: `IUISceneReferences` — `Canvas`, `ScreensRoot`, `PopupsRoot`, `MessagesRoot`; impl: `CoreGameSceneRefs` (Gameplay) + `MetaGameSceneReferences` (Meta); injected into `BaseViewService` subclasses as instantiation parent source
+     `IPopupService` — `Show<TView>()`, `Hide<TView>()`, `HideAll()`; TView : Popup; VContainer injects ViewModel at instantiation (⊥ caller); `Show` while open → no-op
      `IScreenService` — `Show<TView>()`, `Hide<TView>()`; TView : Screen; ≤1 active at a time; tutorial overlays ⊥ this service
-     `BaseViewService` — abstract; shared mechanics: resolve prefab via `IViewSourceProvider`, instantiate via `IObjectResolver`, cache per type, drive open/close lifecycle
+     `BaseViewService` — abstract; shared mechanics: resolve prefab via `IViewSourceProvider`, instantiate via `IObjectResolver` under `IUISceneReferences` parent, cache per type, drive open/close lifecycle
+     `ScreenService : BaseViewService` — injects `IUISceneReferences`; uses `ScreensRoot` as parent; `HideAll()` before each `Show` (V27)
      `IViewSourceProvider` — `GetPrefab<TView>() : BaseView`; impl: `ViewSourceConfig : ScriptableObject` (prefab refs); future: bundle-backed impl
      `BaseView : MonoBehaviour` — open/close lifecycle (UniTask); `Popup : BaseView` (LitMotion scale); `Screen : BaseView` (LitMotion fade)
      `WinPopupView : Popup` — `[Inject] ResultPopupViewModel`; `ScorePopupView : Popup` — `[Inject] ResultPopupViewModel`; score display via `UniText`
      ⊥ `IUIService` ⊥ `EPopupType`
      `LobbyViewModel` — `ReactiveCommand EnterGame`; ⊥ `ISceneService`; pure C#
      `LobbyScreen : Screen` — single "Enter the Game" btn; placeholder; ∈ Meta/UI/
+     `MetaGameSceneReferences : MonoBehaviour, IMetaGameSceneReferences` — ScreensRoot, PopupsRoot, MessagesRoot, Canvas; ∈ Meta/Infrastructure/
 - cfg.session: `SessionSettingsConfig.SessionEndTime` (int sec, default 180) + `ResultDelayTime` (float sec, default 2.0)
 - cfg.shoot: `ShootingConfig` — MaxReflections, CastOffset, CastDistance, ProjectileLifetimeDuration
 - cfg.grid: `GridSettingsConfig` — rows/cols/cell layout
@@ -62,9 +65,10 @@ V21: lifecycle order strict: VContainer injection → `OnOpenStart` → `PlayOpe
 V22: `IPopupService.Show<TView>()` while TView instance already open → no-op (no double-instantiate, no double-open)
 V23: every lifecycle step awaited sequentially (⊥ fire-and-forget); `Show`/`Hide` return `UniTask`
 V24: `ScorePopupView` uses `LightSide.UniText` for score display (⊥ TMPro, ⊥ UnityEngine.UI.Text)
-V25: `LobbyViewModel.EnterGame` executes ≤1×; cmd disabled after first fire (⊥ double-load Core)
+V25: double Core-load prevented by Meta scene disabled immediately after load (V28); `LobbyViewModel` ⊥ self-disable
 V26: `MetaFlow` owns Core scene load on `EnterGame`; `LobbyViewModel` ⊥ `ISceneService` ⊥ `LifetimeScope`
 V27: `IScreenService` ≤1 active Screen at a time; tutorial overlays ∈ separate system (⊥ `IScreenService`)
+V28: `MetaFlow` after Core load additive → `SetSceneEnabled(Meta, false)`; subscribes `SceneManager.sceneUnloaded`; on Core unload → `SetSceneEnabled(Meta, true)` + unsubscribes; `IDisposable.Dispose()` removes subscription on MetaScope teardown
 
 ## §T TASKS
 id|status|task|cites
