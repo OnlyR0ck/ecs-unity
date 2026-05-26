@@ -5,8 +5,8 @@ using VS.Runtime.Shared.UI;
 
 namespace VS.Core.Configs.Features
 {
-    [CreateAssetMenu(menuName = "VS/PopupSourceConfig", fileName = "PopupSourceConfig")]
-    public class PopupSourceConfig : ScriptableObject, IPopupSource
+    [CreateAssetMenu(menuName = "VS/ViewSourceConfig", fileName = "ViewSourceConfig")]
+    public class ViewSourceConfig : ScriptableObject, IViewSourceProvider
     {
         [SerializeField] private List<BaseView> _prefabs;
 
@@ -15,7 +15,7 @@ namespace VS.Core.Configs.Features
             foreach (var prefab in _prefabs)
                 if (prefab is TView)
                     return prefab;
-            throw new Exception($"{typeof(TView).Name} not registered in PopupSourceConfig");
+            throw new Exception($"{typeof(TView).Name} not registered in ViewSourceConfig");
         }
     }
 }

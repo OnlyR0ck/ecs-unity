@@ -24,11 +24,15 @@ Bubble-shooter (VS): player fires colored bubbles at hex grid; match ≥N same-c
 - cfg.gameplay: `GameplayRulesConfig.BubblesToPop` (int ≥2, default 3) + `PopScoreBase` (int) + `PopScoreIncrement` (int) + `DropScorePerBubble` (int) + `TimeBonusA` (float) + `TimeBonusB` (float) + `TimeBonusC` (float) + `BoardClearBonus` (int)
 - session: `ISessionDataService` — read-only snapshot surface; `Score: ReadOnlyReactiveProperty<int>`; `IsGameEnded: bool`; `Snapshot()` pulls from all registered sources (currently `IScoreService.Total`) + sets `IsGameEnded=true`; `Reset()` clears all; no external direct writes (V19)
 - score: `IScoreService` — accumulator; `Add(int delta)` during gameplay; `ComputeFinal(EGameEndReason, int timeRemaining)` → applies bonuses, stores in `Total`; `int Total` readable after `ComputeFinal`; `Reset()` on session start
-- ui: `IPopupService` — `Show<TView>()`, `Hide<TView>()`, `HideAll()`; TView : BaseView; VContainer injects ViewModel into view at instantiation (⊥ caller provides VM); `Show<TView>()` while instance open → no-op
-     `IPopupSource` — `GetPrefab<TView>() : BaseView`; impl: `PopupSourceConfig : ScriptableObject` (prefab refs); future: bundle-backed impl
-     `BaseView : MonoBehaviour` — open/close lifecycle (UniTask); `Popup : BaseView` (LitMotion scale); `Screen : BaseView` (LitMotion fade, deferred to Meta)
+- ui: `IPopupService` — `Show<TView>()`, `Hide<TView>()`, `HideAll()`; TView : Popup; VContainer injects ViewModel at instantiation (⊥ caller); `Show` while open → no-op
+     `IScreenService` — `Show<TView>()`, `Hide<TView>()`; TView : Screen; ≤1 active at a time; tutorial overlays ⊥ this service
+     `BaseViewService` — abstract; shared mechanics: resolve prefab via `IViewSourceProvider`, instantiate via `IObjectResolver`, cache per type, drive open/close lifecycle
+     `IViewSourceProvider` — `GetPrefab<TView>() : BaseView`; impl: `ViewSourceConfig : ScriptableObject` (prefab refs); future: bundle-backed impl
+     `BaseView : MonoBehaviour` — open/close lifecycle (UniTask); `Popup : BaseView` (LitMotion scale); `Screen : BaseView` (LitMotion fade)
      `WinPopupView : Popup` — `[Inject] ResultPopupViewModel`; `ScorePopupView : Popup` — `[Inject] ResultPopupViewModel`; score display via `UniText`
      ⊥ `IUIService` ⊥ `EPopupType`
+     `LobbyViewModel` — `ReactiveCommand EnterGame`; ⊥ `ISceneService`; pure C#
+     `LobbyScreen : Screen` — single "Enter the Game" btn; placeholder; ∈ Meta/UI/
 - cfg.session: `SessionSettingsConfig.SessionEndTime` (int sec, default 180) + `ResultDelayTime` (float sec, default 2.0)
 - cfg.shoot: `ShootingConfig` — MaxReflections, CastOffset, CastDistance, ProjectileLifetimeDuration
 - cfg.grid: `GridSettingsConfig` — rows/cols/cell layout
@@ -58,6 +62,9 @@ V21: lifecycle order strict: VContainer injection → `OnOpenStart` → `PlayOpe
 V22: `IPopupService.Show<TView>()` while TView instance already open → no-op (no double-instantiate, no double-open)
 V23: every lifecycle step awaited sequentially (⊥ fire-and-forget); `Show`/`Hide` return `UniTask`
 V24: `ScorePopupView` uses `LightSide.UniText` for score display (⊥ TMPro, ⊥ UnityEngine.UI.Text)
+V25: `LobbyViewModel.EnterGame` executes ≤1×; cmd disabled after first fire (⊥ double-load Core)
+V26: `MetaFlow` owns Core scene load on `EnterGame`; `LobbyViewModel` ⊥ `ISceneService` ⊥ `LifetimeScope`
+V27: `IScreenService` ≤1 active Screen at a time; tutorial overlays ∈ separate system (⊥ `IScreenService`)
 
 ## §T TASKS
 id|status|task|cites
@@ -90,6 +97,13 @@ T26|x|`PopupService : IPopupService` — `IObjectResolver` instantiates TView, c
 T27|x|`WinPopupView : Popup`, `ScorePopupView : Popup`; `[Inject] ResultPopupViewModel`; score text via `LightSide.UniText`|V21,V24
 T28|x|rm `IUIService` `UIService` `EPopupType`; `ResultPhaseSystem` → `IPopupService.Show<WinPopupView>()` / `Show<ScorePopupView>()`|V11,§I.ui
 T29|x|`CoreScope`: register `PopupSourceConfig` as `IPopupSource`, `PopupService` as singleton `IPopupService`; rm old UIService reg|§I.ui
+T30|x|`Screen : BaseView` — LitMotion fade open/close; full impl (was stub in T24)|V21,V23
+T31|x|`LobbyViewModel` — `ReactiveCommand EnterGame`; disables self after first exec|V25,V26
+T32|x|`LobbyScreen : Screen` — "Enter the Game" btn bound to `EnterGame`; placeholder layout|V21,V25
+T33|x|`MetaScope` — register `IScreenService` (singleton) + `IViewSourceProvider` (`ViewSourceConfig` w/ LobbyScreen prefab) + `LobbyViewModel`|§I.ui,V27
+T34|x|`MetaFlow` — `IScreenService.Show<LobbyScreen>()`; subscribe `LobbyViewModel.EnterGame` → `EnqueueParent(_parent)` + `LoadSceneAsync(Core, Additive)`|V25,V26,V27
+T35|x|rename `IPopupSource` → `IViewSourceProvider`, `PopupSourceConfig` → `ViewSourceConfig` across codebase|§I.ui
+T36|x|extract `BaseViewService` (abstract); add `IScreenService` + `ScreenService : BaseViewService`; `PopupService` extends `BaseViewService`|§I.ui,V27
 
 ## §F FOLDER LAYOUT
 ```
