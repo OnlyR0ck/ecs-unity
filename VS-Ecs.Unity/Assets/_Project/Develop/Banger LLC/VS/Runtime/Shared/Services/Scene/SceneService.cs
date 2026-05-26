@@ -73,5 +73,22 @@ namespace VS.Runtime.Services
             Log.Default.D(LogTag, $"{SceneUtility.GetScenePathByBuildIndex(sceneIndex)} is unloading.");
             await UnitySceneManager.UnloadSceneAsync(sceneIndex);
         }
+
+        public void SetSceneEnabled(int sceneIndex, bool enabled)
+        {
+            var scene = UnitySceneManager.GetSceneByBuildIndex(sceneIndex);
+            if (!scene.isLoaded) return;
+            foreach (var go in scene.GetRootGameObjects())
+            {
+                go.SetActive(enabled);
+            }
+            
+            if (enabled)
+            {
+                UnitySceneManager.SetActiveScene(scene);
+            }
+            
+            Log.Default.D(LogTag, $"Scene {SceneUtility.GetScenePathByBuildIndex(sceneIndex)} {(enabled ? "enabled" : "disabled")}.");
+        }
     }
 }

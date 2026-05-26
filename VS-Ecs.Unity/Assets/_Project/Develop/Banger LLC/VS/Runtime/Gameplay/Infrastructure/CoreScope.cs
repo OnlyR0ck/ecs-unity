@@ -25,7 +25,7 @@ namespace VS.Runtime.Core
         [SerializeField] private InputHandlerService _inputHandler;
         [SerializeField] private CoreGameSceneRefs _refs;
         [SerializeField] private LevelView _levelView;
-        [SerializeField] private PopupSourceConfig _popupSourceConfig;
+        [SerializeField] private ViewSourceConfig _popupSourceConfig;
 
         protected override void Configure(IContainerBuilder builder)
         {
@@ -35,11 +35,11 @@ namespace VS.Runtime.Core
             builder.RegisterInstance(_gameplayRulesConfig);
             builder.RegisterInstance(_sessionSettingsConfig);
             builder.RegisterInstance(_inputHandler);
-            builder.RegisterInstance(_refs).As<ICoreGameSceneRefs>();
+            builder.RegisterInstance(_refs).As<ICoreGameSceneRefs, IUISceneReferences>();
             builder.RegisterInstance(_levelView).As<ILevel>();
             builder.Register<ScoreService>(Lifetime.Singleton).As<IScoreService>();
             builder.Register<SessionDataService>(Lifetime.Singleton).As<ISessionDataService>();
-            builder.RegisterInstance(_popupSourceConfig).As<IPopupSource>();
+            builder.RegisterInstance(_popupSourceConfig).As<IViewSourceProvider>();
             builder.Register<PopupService>(Lifetime.Singleton).As<IPopupService>();
             builder.Register<GridModel>(Lifetime.Singleton);
             builder.Register<InputService>(Lifetime.Singleton).AsImplementedInterfaces();

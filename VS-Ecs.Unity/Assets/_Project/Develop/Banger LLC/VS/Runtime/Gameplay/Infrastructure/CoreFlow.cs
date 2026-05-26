@@ -14,16 +14,12 @@ namespace VS.Runtime.Core
 {
     public class CoreFlow : IInitializable, IDisposable, ITickable, IFixedTickable, ILateTickable
     {
-        private readonly ILoadingService _loadingService;
-        private readonly ISceneService _sceneService;
         private EcsPipeline _pipeline;
         private EcsDefaultWorld _world;
         private readonly IObjectResolver _objectResolver;
 
-        public CoreFlow(ILoadingService loadingService, ISceneService sceneService, IObjectResolver objectResolver, EcsDefaultWorld world)
+        public CoreFlow(IObjectResolver objectResolver, EcsDefaultWorld world)
         {
-            _loadingService = loadingService;
-            _sceneService = sceneService;
             _objectResolver = objectResolver;
             _world = world;
         }
