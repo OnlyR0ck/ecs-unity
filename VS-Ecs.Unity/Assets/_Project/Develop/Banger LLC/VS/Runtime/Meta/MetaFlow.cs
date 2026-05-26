@@ -1,25 +1,37 @@
-﻿using VS.Runtime.Services;
-using Cysharp.Threading.Tasks;
+﻿using System;
+using VS.Runtime.Services;
+using UnityEngine.SceneManagement;
+using VContainer;
 using VContainer.Unity;
-using VS.Runtime.Bootstrap.Units;
+using VS.Runtime.Utilities.Logging;
 
 namespace VS.Runtime.Meta
 {
     public class MetaFlow : IStartable
     {
-        private readonly ILoadingService _loadingService;
         private readonly ISceneService _sceneService;
+        private readonly LifetimeScope _parent;
 
-        public MetaFlow(ILoadingService loadingService, ISceneService sceneService)
+        [Inject]
+        public MetaFlow(ISceneService sceneService, LifetimeScope parent)
         {
-            _loadingService = loadingService;
+            _parent = parent;
             _sceneService = sceneService;
         }
 
         public async void Start()
         {
-            await _loadingService.BeginLoading(new FooLoadingUnit(3));
-            _sceneService.LoadScene(RuntimeConstants.Scenes.Core).Forget();
+            try
+            {
+                using (LifetimeScope.EnqueueParent(_parent))
+                {
+                    await _sceneService.LoadSceneAsync(RuntimeConstants.Scenes.Core, LoadSceneMode.Additive);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Loading.E("MetaFlow.Start", e);
+            }
         }
     }
 }

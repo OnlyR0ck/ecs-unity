@@ -45,6 +45,7 @@ namespace VS.Runtime.Services
             {
                 Log.Default.D(LogTag, $"Empty scene skipped. {SceneUtility.GetScenePathByBuildIndex(toLoadIndex)} is loading.");
                 await UnitySceneManager.LoadSceneAsync(toLoadIndex, LoadSceneMode.Additive);
+                return;
             }
             
             bool needLoadEmpty = toLoadIndex == RuntimeConstants.Scenes.Meta || toLoadIndex == RuntimeConstants.Scenes.Core || toLoadIndex == RuntimeConstants.Scenes.Loading;
@@ -57,6 +58,20 @@ namespace VS.Runtime.Services
             
             Log.Default.D(LogTag, $"{SceneUtility.GetScenePathByBuildIndex(toLoadIndex)} is loading.");
             await UnitySceneManager.LoadSceneAsync(toLoadIndex, mode);
+        }
+
+        public async UniTask UnloadSceneAsync(int sceneIndex)
+        {
+            Scene scene = UnitySceneManager.GetSceneByBuildIndex(sceneIndex);
+
+            if (!scene.isLoaded)
+            {
+                Log.Default.D(LogTag, $"Scene {SceneUtility.GetScenePathByBuildIndex(sceneIndex)} is not loaded, skipping unload.");
+                return;
+            }
+
+            Log.Default.D(LogTag, $"{SceneUtility.GetScenePathByBuildIndex(sceneIndex)} is unloading.");
+            await UnitySceneManager.UnloadSceneAsync(sceneIndex);
         }
     }
 }

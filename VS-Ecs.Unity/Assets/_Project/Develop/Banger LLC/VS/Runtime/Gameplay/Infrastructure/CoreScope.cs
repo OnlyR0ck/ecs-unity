@@ -41,13 +41,15 @@ namespace VS.Runtime.Core
             builder.Register<SessionDataService>(Lifetime.Singleton).As<ISessionDataService>();
             builder.RegisterInstance(_popupSourceConfig).As<IPopupSource>();
             builder.Register<PopupService>(Lifetime.Singleton).As<IPopupService>();
-            builder.Register<ResultPopupViewModel>(Lifetime.Transient);
             builder.Register<GridModel>(Lifetime.Singleton);
             builder.Register<InputService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<GridParamsService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.RegisterInstance(new EcsDefaultWorld());
             //builder.RegisterEntryPoint<EcsRoot>();
             builder.RegisterEntryPoint<CoreFlow>();
+            
+            //TODO: vm to factories
+            builder.Register<ResultPopupViewModel>(Lifetime.Singleton).As<IInitializable, ResultPopupViewModel>();
         }
     }
 }
