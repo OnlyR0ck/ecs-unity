@@ -168,6 +168,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentReference:
-    TypeName: CompanyName.UEPT.Runtime.Bootstrap.BootstrapScope
+    TypeName: 
   autoRun: 1
   autoInjectGameObjects: []
+--- !u!1660057539 &9223372036854775807
+SceneRoots:
+  m_ObjectHideFlags: 0
+  m_Roots:
+  - {fileID: 1169396818}

@@ -17,7 +17,8 @@ namespace VS.Runtime.Core.Components.StateMachine
     {
         TimeIsUp = 0,
         BoardIsFull = 1,
-        BoardIsCleaned = 2
+        BoardIsCleaned = 2,
+        Debug = 3
     }
 
     [Serializable]

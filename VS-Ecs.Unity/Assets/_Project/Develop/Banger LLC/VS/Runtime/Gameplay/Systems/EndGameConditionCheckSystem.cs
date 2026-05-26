@@ -1,4 +1,5 @@
 using DCFApixels.DragonECS;
+using UnityEngine;
 using VContainer;
 using VS.Core.Configs.Features;
 using VS.Runtime.Core.Components;
@@ -69,6 +70,15 @@ namespace VS.Runtime.Core.Systems
                 result.GameEndReason = EGameEndReason.TimeIsUp;
                 return;
             }
+
+            #if UNITY_EDITOR
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                var newEntity = _world.NewEntity();
+                ref var result = ref _world.GetPool<EndGameResult>().TryAddOrGet(newEntity);
+                result.GameEndReason = EGameEndReason.Debug;
+            }
+            #endif
         }
 
         // skip end-game check while a FieldSettledEvent is being processed this frame

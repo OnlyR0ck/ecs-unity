@@ -10,10 +10,17 @@ namespace VS.Runtime.Core.UI
     {
         [SerializeField] private Button _submitButton;
 
+        private ResultPopupViewModel _vm;
+
         [Inject]
         public void Construct(ResultPopupViewModel vm)
         {
-            _submitButton.onClick.AddListener(() => vm.Submit.Execute(Unit.Default));
+            _vm = vm;
+            _submitButton.onClick.AddListener(OnSubmitClicked);
         }
+
+        private void OnSubmitClicked() => _vm.Submit.Execute(Unit.Default);
+
+        private void OnDestroy() => _vm?.Disposables.Dispose();
     }
 }

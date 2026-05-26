@@ -657,7 +657,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: LightSide.UniText::LightSide.UniText
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -682,16 +682,12 @@ MonoBehaviour:
   modRegisterConfigs:
     items: []
   highlighter:
-    rid: 3321186483665109233
+    rid: -2
   references:
     version: 2
     RefIds:
-    - rid: 3321186483665109233
-      type: {class: DefaultTextHighlighter, ns: LightSide, asm: LightSide.UniText}
-      data:
-        clickColor: {r: 0.2, g: 0.5, b: 1, a: 0.6}
-        fadeDuration: 0.25
-        hoverColor: {r: 0.2, g: 0.5, b: 1, a: 0.1}
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!1 &8913323607146178922
 GameObject:
   m_ObjectHideFlags: 0

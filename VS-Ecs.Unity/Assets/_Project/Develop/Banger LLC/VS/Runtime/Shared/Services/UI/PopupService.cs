@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using VContainer;
 using VContainer.Unity;
+using VS.Runtime.Core.Infrastructure;
 using Object = UnityEngine.Object;
 
 namespace VS.Runtime.Shared.UI
@@ -12,9 +13,11 @@ namespace VS.Runtime.Shared.UI
         private readonly IObjectResolver _resolver;
         private readonly IPopupSource _source;
         private readonly Dictionary<Type, BaseView> _active = new();
+        private readonly ICoreGameSceneRefs _sceneRefs;
 
-        public PopupService(IObjectResolver resolver, IPopupSource source)
+        public PopupService(IObjectResolver resolver, IPopupSource source, ICoreGameSceneRefs sceneRefs)
         {
+            _sceneRefs = sceneRefs;
             _resolver = resolver;
             _source = source;
         }
@@ -26,7 +29,7 @@ namespace VS.Runtime.Shared.UI
                 return;
 
             var prefab = _source.GetPrefab<TView>();
-            var go = _resolver.Instantiate(prefab.gameObject);
+            var go = _resolver.Instantiate(prefab.gameObject, _sceneRefs.PopupsRoot);
             var view = go.GetComponent<TView>();
             _active[type] = view;
             await view.Open();
