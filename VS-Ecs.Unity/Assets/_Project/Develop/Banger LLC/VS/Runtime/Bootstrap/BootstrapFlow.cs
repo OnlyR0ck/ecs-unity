@@ -1,5 +1,6 @@
 using VS.Runtime.Services;
 using UnityEngine.SceneManagement;
+using VContainer;
 using VContainer.Unity;
 
 namespace VS.Runtime.Bootstrap
@@ -9,6 +10,7 @@ namespace VS.Runtime.Bootstrap
         private readonly ISceneService _sceneService;
         private readonly LifetimeScope _parent;
 
+        [Inject]
         public BootstrapFlow(ISceneService sceneService, LifetimeScope parent)
         {
             _parent = parent;
@@ -19,7 +21,7 @@ namespace VS.Runtime.Bootstrap
         {
             using (LifetimeScope.EnqueueParent(_parent))
             {
-                await _sceneService.LoadSceneAsync(RuntimeConstants.Scenes.Core, LoadSceneMode.Additive);
+                await _sceneService.LoadSceneAsync(RuntimeConstants.Scenes.Loading, LoadSceneMode.Additive);
             }
         }
     }

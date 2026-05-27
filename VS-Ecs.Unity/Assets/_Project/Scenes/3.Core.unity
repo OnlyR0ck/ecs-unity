@@ -195,6 +195,7 @@ MonoBehaviour:
   _inputHandler: {fileID: 4602340311610970921}
   _refs: {fileID: 1202160333877432493}
   _levelView: {fileID: 1813649382}
+  _popupSourceConfig: {fileID: 11400000, guid: 50e61e3dc325a4a5aa7ba04183817475, type: 2}
 --- !u!223 &1462473238 stripped
 Canvas:
   m_CorrespondingSourceObject: {fileID: 6360272991316720645, guid: f58d9e6c3ad1544c681e5fcd263715d4, type: 3}

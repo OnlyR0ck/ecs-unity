@@ -19,6 +19,7 @@
     "com.unity.ugui": "2.0.0",
     "games.corundum.stateless-for-unity": "https://github.com/CorundumGames/Stateless-For-Unity.git",
     "jp.hadashikick.vcontainer": "https://github.com/hadashiA/VContainer.git?path=VContainer/Assets/VContainer#1.16.2",
+    "media.lightside.unitext": "https://github.com/LightSideMeowshop/unitext.git#1.0.0",
     "com.unity.modules.accessibility": "1.0.0",
     "com.unity.modules.adaptiveperformance": "1.0.0",
     "com.unity.modules.ai": "1.0.0",

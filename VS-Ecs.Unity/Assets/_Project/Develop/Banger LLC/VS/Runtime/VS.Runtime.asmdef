@@ -14,7 +14,8 @@
         "DCFApixels.DebugX",
         "LitMotion",
         "LitMotion.Extensions",
-        "LitMotion.Editor"
+        "LitMotion.Editor",
+        "LightSide.UniText"
     ],
     "includePlatforms": [
         "Android",
@@ -22,8 +23,10 @@
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "R3.dll"
+    ],
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
