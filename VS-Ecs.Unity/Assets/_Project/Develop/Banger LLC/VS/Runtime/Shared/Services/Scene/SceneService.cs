@@ -47,15 +47,19 @@ namespace VS.Runtime.Services
                 await UnitySceneManager.LoadSceneAsync(toLoadIndex, LoadSceneMode.Additive);
                 return;
             }
-            
-            bool needLoadEmpty = toLoadIndex == RuntimeConstants.Scenes.Meta || toLoadIndex == RuntimeConstants.Scenes.Core || toLoadIndex == RuntimeConstants.Scenes.Loading;
+
+            // Empty buffer only needed for Single loads to avoid frame hitching; Additive must NOT clear existing scenes
+            bool needLoadEmpty = mode == LoadSceneMode.Single &&
+                                 (toLoadIndex == RuntimeConstants.Scenes.Meta ||
+                                  toLoadIndex == RuntimeConstants.Scenes.Core ||
+                                  toLoadIndex == RuntimeConstants.Scenes.Loading);
 
             if (needLoadEmpty)
             {
                 Log.Default.D(LogTag, $"{SceneUtility.GetScenePathByBuildIndex(RuntimeConstants.Scenes.Empty)} is loading.");
                 UnitySceneManager.LoadSceneAsync(RuntimeConstants.Scenes.Empty);
             }
-            
+
             Log.Default.D(LogTag, $"{SceneUtility.GetScenePathByBuildIndex(toLoadIndex)} is loading.");
             await UnitySceneManager.LoadSceneAsync(toLoadIndex, mode);
         }

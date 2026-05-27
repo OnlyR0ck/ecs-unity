@@ -69,6 +69,7 @@ V25: double Core-load prevented by Meta scene disabled immediately after load (V
 V26: `MetaFlow` owns Core scene load on `EnterGame`; `LobbyViewModel` ⊥ `ISceneService` ⊥ `LifetimeScope`
 V27: `IScreenService` ≤1 active Screen at a time; tutorial overlays ∈ separate system (⊥ `IScreenService`)
 V28: `MetaFlow` after Core load additive → `SetSceneEnabled(Meta, false)`; subscribes `SceneManager.sceneUnloaded`; on Core unload → `SetSceneEnabled(Meta, true)` + unsubscribes; `IDisposable.Dispose()` removes subscription on MetaScope teardown
+V29: `SceneService.LoadSceneAsync` — Empty-buffer (`needLoadEmpty`) ! only when `mode == Single`; Additive loads must never trigger Empty (Single) → would destroy existing scenes + dispose parent LifetimeScope containers
 
 ## §T TASKS
 id|status|task|cites
@@ -144,3 +145,4 @@ Q3: result overlay is IPopup not IScreen (confirmed); IScreen = singleton full-s
 
 ## §B BUGS
 id|date|cause|fix
+B1|2026-05-27|`LoadSceneAsync` applied Empty-buffer for Additive loads → destroyed Meta scene + disposed MetaScope container → second Core load: `EnqueueParent(metaScope)` parent dead → VContainer can't reach BootstrapScope → `ISceneService` not found|V29: gate `needLoadEmpty` on `mode==Single`

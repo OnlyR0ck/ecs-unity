@@ -37,10 +37,10 @@ namespace VS.Runtime.Core
             builder.RegisterInstance(_inputHandler);
             builder.RegisterInstance(_refs).As<ICoreGameSceneRefs, IUISceneReferences>();
             builder.RegisterInstance(_levelView).As<ILevel>();
-            builder.Register<ScoreService>(Lifetime.Singleton).As<IScoreService>();
-            builder.Register<SessionDataService>(Lifetime.Singleton).As<ISessionDataService>();
+            builder.Register<IScoreService, ScoreService>(Lifetime.Singleton);
+            builder.Register<ISessionDataService, SessionDataService>(Lifetime.Singleton);
             builder.RegisterInstance(_popupSourceConfig).As<IViewSourceProvider>();
-            builder.Register<PopupService>(Lifetime.Singleton).As<IPopupService>();
+            builder.Register<IPopupService, PopupService>(Lifetime.Scoped);
             builder.Register<GridModel>(Lifetime.Singleton);
             builder.Register<InputService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<GridParamsService>(Lifetime.Singleton).AsImplementedInterfaces();

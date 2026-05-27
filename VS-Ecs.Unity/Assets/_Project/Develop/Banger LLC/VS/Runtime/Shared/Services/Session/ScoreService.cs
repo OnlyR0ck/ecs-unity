@@ -1,16 +1,18 @@
 using UnityEngine;
+using VContainer;
 using VS.Core.Configs.Features;
 using VS.Runtime.Core.Components.StateMachine;
 
 namespace VS.Runtime.Services.Session
 {
-    public class ScoreService : IScoreService
+    public sealed class ScoreService : IScoreService
     {
         private readonly GameplayRulesConfig _config;
         private int _accumulated;
 
         public int Total { get; private set; }
 
+        [Inject]
         public ScoreService(GameplayRulesConfig config)
         {
             _config = config;
