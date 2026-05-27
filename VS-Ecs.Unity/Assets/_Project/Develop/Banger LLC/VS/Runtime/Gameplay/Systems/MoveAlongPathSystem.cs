@@ -20,7 +20,7 @@ namespace VS.Runtime.Core.Systems
             public EcsPool<UnityComponent<Transform>> Transforms = Inc;
         }
         
-        private const float DefaultSpeed = 5f;
+        private const float DefaultSpeed = 10f;
         private readonly EcsDefaultWorld _world;
 
         [Inject]
@@ -35,22 +35,23 @@ namespace VS.Runtime.Core.Systems
             {
                 Transform transform = aspect.Transforms.Get(entity).obj;
                 ref Path path = ref aspect.Objects.Get(entity);
-                
+
                 if (path.CurrentIndex >= path.Points.Length - 1)
                 {
                     transform.position = path.Points[^1];
                     aspect.Objects.Del(entity);
-                    return;
+                    continue;
                 }
 
                 float dt = Time.deltaTime;
                 var direction = (path.Points[path.CurrentIndex + 1] - path.Points[path.CurrentIndex]).normalized;
                 transform.position += direction * DefaultSpeed * dt;
-                if ((transform.position - path.Points[path.CurrentIndex + 1]).sqrMagnitude < Epsilon) 
+
+                // V30: dot-product detects passage even when projectile overshoots by > sqrt(epsilon)
+                var toNext = path.Points[path.CurrentIndex + 1] - transform.position;
+                if (Vector3.Dot(toNext, direction) <= 0)
                     path.CurrentIndex++;
             }
         }
-
-        private const float Epsilon = 0.01f;
     }
 }

@@ -176,7 +176,11 @@ namespace VS.Runtime.Core.Systems
 
                 if (hit.normal == Vector2.down)
                 {
+                    CellView cell = _model.FindClosestCell(hit.point, ECellState.Free);
+                    Vector3 cellPosition = cell.transform.position;
+                    index = cell.Coord;
                     collisionPoints.Add(hit.point);
+                    collisionPoints.Add(cellPosition);
                     break;
                 }
 

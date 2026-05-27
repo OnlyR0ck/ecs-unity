@@ -70,6 +70,10 @@ V26: `MetaFlow` owns Core scene load on `EnterGame`; `LobbyViewModel` ⊥ `IScen
 V27: `IScreenService` ≤1 active Screen at a time; tutorial overlays ∈ separate system (⊥ `IScreenService`)
 V28: `MetaFlow` after Core load additive → `SetSceneEnabled(Meta, false)`; subscribes `SceneManager.sceneUnloaded`; on Core unload → `SetSceneEnabled(Meta, true)` + unsubscribes; `IDisposable.Dispose()` removes subscription on MetaScope teardown
 V29: `SceneService.LoadSceneAsync` — Empty-buffer (`needLoadEmpty`) ! only when `mode == Single`; Additive loads must never trigger Empty (Single) → would destroy existing scenes + dispose parent LifetimeScope containers
+V30: `MoveAlongPathSystem` waypoint advance — detect passage by `dot(nextPoint - position, direction) ≤ 0`; proximity epsilon alone invalid when `speed * dt > sqrt(Epsilon)` → overshoot → direction reversal → collision miss
+V31: `GetUnattached` BFS anchor = ∀ occupied cells with `index.x==0` (top row); `GetLineIndices(n)` returns `(n,j)` for all j — a column, not a row; seeding from column y=0 instead of top row x=0 → ceiling-attached groups wrongly classified as unattached → false drop
+V32: `GetCollisionPoints` ceiling branch (hit.normal==Vector2.down) must call `FindClosestCell(hit.point, Free)` + assign `index` + append cellPosition to path before break; omitting → index=null → bubble placed at `Vector2Int.zero` (top-left cell)
+V33: on `FieldSettledEvent`, if zero Occupied cells remain in grid → `EndGameResult{BoardIsCleaned}` emitted before `EvaluateGameOver()`; missing check → win condition never triggers regardless of board state
 
 ## §T TASKS
 id|status|task|cites
@@ -109,6 +113,10 @@ T33|x|`MetaScope` — register `IScreenService` (singleton) + `IViewSourceProvid
 T34|x|`MetaFlow` — `IScreenService.Show<LobbyScreen>()`; subscribe `LobbyViewModel.EnterGame` → `EnqueueParent(_parent)` + `LoadSceneAsync(Core, Additive)`|V25,V26,V27
 T35|x|rename `IPopupSource` → `IViewSourceProvider`, `PopupSourceConfig` → `ViewSourceConfig` across codebase|§I.ui
 T36|x|extract `BaseViewService` (abstract); add `IScreenService` + `ScreenService : BaseViewService`; `PopupService` extends `BaseViewService`|§I.ui,V27
+T37|x|`MoveAlongPathSystem`: replace proximity epsilon with dot-product waypoint-passage check; fix `return` → `continue` in loop body|V30
+T38|x|`GetUnattached`: replace `GetLineIndices(0)` with explicit top-row seed `(0,j)` for j in 0..Columns-1|V31
+T39|x|`CannonShootSystem.GetCollisionPoints`: ceiling branch → `FindClosestCell(hit.point, Free)` + set index + append cellPosition to path (mirror occupied-bubble branch)|V32
+T40|x|`EndGameConditionCheckSystem`: on `FieldSettledEvent` present, scan grid; if zero Occupied cells → emit `EndGameResult{BoardIsCleaned}`|V33
 
 ## §F FOLDER LAYOUT
 ```
@@ -146,3 +154,8 @@ Q3: result overlay is IPopup not IScreen (confirmed); IScreen = singleton full-s
 ## §B BUGS
 id|date|cause|fix
 B1|2026-05-27|`LoadSceneAsync` applied Empty-buffer for Additive loads → destroyed Meta scene + disposed MetaScope container → second Core load: `EnqueueParent(metaScope)` parent dead → VContainer can't reach BootstrapScope → `ISceneService` not found|V29: gate `needLoadEmpty` on `mode==Single`
+B2|2026-05-27|`MoveAlongPathSystem`: sqrMagnitude < 0.01f waypoint check fails when projectile overshoots by > 0.1u → index frozen → direction unchanged → projectile moves away from passed point → reflection skipped → bubble never lands|V30: dot-product passage check; T37
+B3|2026-05-27|`ScoreService.ComputeFinal` applies time+clear bonuses silently → tester sees unexpectedly high score (e.g. 3000) with zero pops; no debug breakdown|add `CustomDebugLog` bonus breakdown in `ComputeFinal`
+B4|2026-05-27|`GetUnattached` seeds BFS from col y=0 (leftmost) via `GetLineIndices(0)`; correct anchor = top row x=0; bubbles attached only to ceiling (not left wall) wrongly dropped|V31
+B5|2026-05-27|`CannonShootSystem.GetCollisionPoints` ceiling branch skips `FindClosestCell` + index assignment → index=null → bubble placed at `Vector2Int.zero` on every ceiling shot|V32
+B6|2026-05-27|`EndGameConditionCheckSystem` only emits `TimeIsUp`; no system checks all-Free grid after settle → `EvaluateGameOver()` never true for win → `BoardIsCleaned` never triggered|V33

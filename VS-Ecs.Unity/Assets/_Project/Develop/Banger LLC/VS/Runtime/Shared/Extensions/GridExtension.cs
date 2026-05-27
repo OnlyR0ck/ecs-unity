@@ -115,8 +115,10 @@ namespace VS.Runtime.Extensions
         
         public static IReadOnlyCollection<Vector2Int> GetUnattached(this GridModel model)
         {
-            // Get the first row's occupied indices
-            var firstLineIndices = model.GetLineIndices(0).ToList();
+            var columns = model.Grid.Cells.GetLength(1);
+            var firstLineIndices = new List<Vector2Int>(columns);
+            for (var j = 0; j < columns; j++)
+                firstLineIndices.Add(new Vector2Int(0, j));
             model.RemoveCellWithState(ref firstLineIndices, ECellState.Free);
 
             // HashSet to store attached bubbles
