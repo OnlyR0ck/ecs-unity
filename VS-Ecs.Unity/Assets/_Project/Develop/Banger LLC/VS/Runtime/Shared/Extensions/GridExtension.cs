@@ -174,6 +174,21 @@ namespace VS.Runtime.Extensions
         {
             indices.RemoveAll(index => model[index].State == state);
         }
+
+        public static HashSet<EBubbleColor> GetFieldColors(this GridModel model)
+        {
+            var colors = new HashSet<EBubbleColor>();
+            var cells = model.Grid.Cells;
+            for (var x = 0; x < cells.GetLength(0); x++)
+            {
+                for (var y = 0; y < cells.GetLength(1); y++)
+                {
+                    if (cells[x, y].State == ECellState.Occupied && cells[x, y].Content is BubbleView bubble)
+                        colors.Add(bubble.Color);
+                }
+            }
+            return colors;
+        }
     }
 }
 

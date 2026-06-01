@@ -99,7 +99,7 @@ namespace VS.Runtime.Core.Systems
         {
             CacheValues();
             _inputService.OnEndDrag += OnEndDrag_Handler;
-            _nextColor = BubbleExtensions.GetRandomColor();
+            _nextColor = BubbleExtensions.GetRandomColor(_model.GetFieldColors());
             Debug.Log($"Next color: {_nextColor}");
         }
 
@@ -123,7 +123,7 @@ namespace VS.Runtime.Core.Systems
             var projectile = Object.Instantiate(_bubblePrefab, _bulletSpawnRoot.position, Quaternion.identity);
             projectile.transform.localScale = _params.CellSize;
             projectile.SetColor(_nextColor);
-            _nextColor = BubbleExtensions.GetRandomColor();
+            _nextColor = BubbleExtensions.GetRandomColor(_model.GetFieldColors());
             Debug.Log($"Next color: {_nextColor}");
             
             entlong projectileEntity = _world.NewEntityLong();

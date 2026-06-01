@@ -43,7 +43,7 @@ namespace VS.Runtime.Core.Systems
                 direction.z = 0;
                 float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - Coordinates.AlignTo2DDegrees;
                 root.localRotation = Quaternion.Euler(0, 0, angle);
-                root.eulerAngles = ClampRotation(root, rotation.FromTo.x, rotation.FromTo.y);
+                root.localEulerAngles = ClampRotation(root, rotation.FromTo.x, rotation.FromTo.y);
             }
         }
 

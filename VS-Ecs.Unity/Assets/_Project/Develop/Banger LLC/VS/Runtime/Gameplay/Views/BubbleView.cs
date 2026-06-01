@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Random = System.Random;
+using VS.Runtime.Services;
 
 namespace VS.Runtime.Core.Views
 {
@@ -23,11 +23,7 @@ namespace VS.Runtime.Core.Views
 
     public static class BubbleExtensions
     {
-        private static int? _colorRange;
-        private static Random _random;
-
-        private static Random Random => _random ??= new Random();
-        private static int ColorRange => _colorRange ??= Enum.GetValues(typeof(EBubbleColor)).Length;  
+        private static readonly int ColorRange = Enum.GetValues(typeof(EBubbleColor)).Length;
         private static readonly Dictionary<EBubbleColor, Color> BubbleColorDictionary = new()
         {
             { EBubbleColor.None, Color.clear },
@@ -35,15 +31,29 @@ namespace VS.Runtime.Core.Views
             { EBubbleColor.Red, Color.red },
             { EBubbleColor.Blue, Color.blue },
             { EBubbleColor.Green, Color.green },
-            { EBubbleColor.Purple, new Color(0.5f, 0f, 0.5f) }, 
+            { EBubbleColor.Purple, new Color(0.5f, 0f, 0.5f) },
             { EBubbleColor.Pink, new Color(1f, 0.41f, 0.71f) }
         };
-        
-        public static Color GetColor(EBubbleColor colorType) => 
+
+        public static Color GetColor(EBubbleColor colorType) =>
             BubbleColorDictionary[colorType];
 
         public static EBubbleColor GetRandomColor() =>
-            (EBubbleColor)Random.Next(1, ColorRange);
+            (EBubbleColor)RandomService.Current.Next(1, ColorRange);
+
+        public static EBubbleColor GetRandomColor(HashSet<EBubbleColor> fieldColors)
+        {
+            if (fieldColors == null || fieldColors.Count == 0)
+                return GetRandomColor();
+            var index = RandomService.Current.Next(0, fieldColors.Count);
+            var i = 0;
+            foreach (var color in fieldColors)
+            {
+                if (i == index) return color;
+                i++;
+            }
+            return GetRandomColor();
+        }
     }
 
     public enum EBubbleColor

@@ -36,7 +36,8 @@ Bubble-shooter (VS): player fires colored bubbles at hex grid; match ≥N same-c
      `LobbyViewModel` — `ReactiveCommand EnterGame`; ⊥ `ISceneService`; pure C#
      `LobbyScreen : Screen` — single "Enter the Game" btn; placeholder; ∈ Meta/UI/
      `MetaGameSceneReferences : MonoBehaviour, IMetaGameSceneReferences` — ScreensRoot, PopupsRoot, MessagesRoot, Canvas; ∈ Meta/Infrastructure/
-- cfg.session: `SessionSettingsConfig.SessionEndTime` (int sec, default 180) + `ResultDelayTime` (float sec, default 2.0)
+- cfg.session: `SessionSettingsConfig.SessionEndTime` (int sec, default 180) + `ResultDelayTime` (float sec, default 2.0) + `LevelSeed` (int, default 42; overridden by server before session start)
+- random: `IRandomService` — `Next(int min, int max): int`; `RandomService.Current: IRandomService` static accessor; seeded once at `CoreScope` init from `SessionSettingsConfig.LevelSeed`; sole source of randomness in session
 - cfg.shoot: `ShootingConfig` — MaxReflections, CastOffset, CastDistance, ProjectileLifetimeDuration
 - cfg.grid: `GridSettingsConfig` — rows/cols/cell layout
 
@@ -74,6 +75,9 @@ V30: `MoveAlongPathSystem` waypoint advance — detect passage by `dot(nextPoint
 V31: `GetUnattached` BFS anchor = ∀ occupied cells with `index.x==0` (top row); `GetLineIndices(n)` returns `(n,j)` for all j — a column, not a row; seeding from column y=0 instead of top row x=0 → ceiling-attached groups wrongly classified as unattached → false drop
 V32: `GetCollisionPoints` ceiling branch (hit.normal==Vector2.down) must call `FindClosestCell(hit.point, Free)` + assign `index` + append cellPosition to path before break; omitting → index=null → bubble placed at `Vector2Int.zero` (top-left cell)
 V33: on `FieldSettledEvent`, if zero Occupied cells remain in grid → `EndGameResult{BoardIsCleaned}` emitted before `EvaluateGameOver()`; missing check → win condition never triggers regardless of board state
+V34: `CannonRotationSystem.ClampRotation` result → `root.localEulerAngles` (⊥ `root.eulerAngles`); applying local-space angles via world setter breaks clamp when parent rotation ≠ identity → cannon exceeds arc → aim line past ceiling
+V35: cannon `_nextColor` sampled only from `EBubbleColor` values with ≥1 Occupied cell on field at shot-prep time; `GridModel` extension `GetFieldColors()` → `HashSet<EBubbleColor>`; `BubbleExtensions.GetRandomColor()` ⊥ full enum range when any color absent from grid
+V36: single `IRandomService` per session; `RandomService.Current` set exactly once at `CoreScope` init; all random calls route through `RandomService.Current`; `new System.Random()` ⊥ anywhere except inside `RandomService` ctor
 
 ## §T TASKS
 id|status|task|cites
@@ -117,6 +121,9 @@ T37|x|`MoveAlongPathSystem`: replace proximity epsilon with dot-product waypoint
 T38|x|`GetUnattached`: replace `GetLineIndices(0)` with explicit top-row seed `(0,j)` for j in 0..Columns-1|V31
 T39|x|`CannonShootSystem.GetCollisionPoints`: ceiling branch → `FindClosestCell(hit.point, Free)` + set index + append cellPosition to path (mirror occupied-bubble branch)|V32
 T40|x|`EndGameConditionCheckSystem`: on `FieldSettledEvent` present, scan grid; if zero Occupied cells → emit `EndGameResult{BoardIsCleaned}`|V33
+T41|x|`CannonRotationSystem.OnDrag_Handler`: replace `root.eulerAngles =` → `root.localEulerAngles =`|V34
+T42|x|`GridModel`: add extension method `GetFieldColors() → HashSet<EBubbleColor>` (Occupied cells only); `CannonShootSystem` calls it before each `_nextColor` pick; `BubbleExtensions.GetRandomColor(HashSet<EBubbleColor>)` overload samples from that set|V35
+T43|x|`IRandomService`/`RandomService` (static `Current`); `LevelSeed` in `SessionSettingsConfig`; register in `CoreScope`; replace `BubbleExtensions._random` with `RandomService.Current`|V36
 
 ## §F FOLDER LAYOUT
 ```
@@ -159,3 +166,5 @@ B3|2026-05-27|`ScoreService.ComputeFinal` applies time+clear bonuses silently �
 B4|2026-05-27|`GetUnattached` seeds BFS from col y=0 (leftmost) via `GetLineIndices(0)`; correct anchor = top row x=0; bubbles attached only to ceiling (not left wall) wrongly dropped|V31
 B5|2026-05-27|`CannonShootSystem.GetCollisionPoints` ceiling branch skips `FindClosestCell` + index assignment → index=null → bubble placed at `Vector2Int.zero` on every ceiling shot|V32
 B6|2026-05-27|`EndGameConditionCheckSystem` only emits `TimeIsUp`; no system checks all-Free grid after settle → `EvaluateGameOver()` never true for win → `BoardIsCleaned` never triggered|V33
+B7|2026-06-01|`CannonRotationSystem.ClampRotation` returns local-space angles assigned to `root.eulerAngles` (world setter); non-identity parent rotation → clamp fails → cannon exceeds arc → aim line above ceiling|V34
+B8|2026-06-01|`CannonShootSystem._nextColor` via `BubbleExtensions.GetRandomColor()` samples full enum (1..6) regardless of field state → cannon can shoot color absent from grid → un-matchable shots|V35
