@@ -115,8 +115,10 @@ namespace VS.Runtime.Extensions
         
         public static IReadOnlyCollection<Vector2Int> GetUnattached(this GridModel model)
         {
-            // Get the first row's occupied indices
-            var firstLineIndices = model.GetLineIndices(0).ToList();
+            var columns = model.Grid.Cells.GetLength(1);
+            var firstLineIndices = new List<Vector2Int>(columns);
+            for (var j = 0; j < columns; j++)
+                firstLineIndices.Add(new Vector2Int(0, j));
             model.RemoveCellWithState(ref firstLineIndices, ECellState.Free);
 
             // HashSet to store attached bubbles
@@ -171,6 +173,21 @@ namespace VS.Runtime.Extensions
         public static void RemoveCellWithState(this GridModel model, ref List<Vector2Int> indices, ECellState state)
         {
             indices.RemoveAll(index => model[index].State == state);
+        }
+
+        public static HashSet<EBubbleColor> GetFieldColors(this GridModel model)
+        {
+            var colors = new HashSet<EBubbleColor>();
+            var cells = model.Grid.Cells;
+            for (var x = 0; x < cells.GetLength(0); x++)
+            {
+                for (var y = 0; y < cells.GetLength(1); y++)
+                {
+                    if (cells[x, y].State == ECellState.Occupied && cells[x, y].Content is BubbleView bubble)
+                        colors.Add(bubble.Color);
+                }
+            }
+            return colors;
         }
     }
 }

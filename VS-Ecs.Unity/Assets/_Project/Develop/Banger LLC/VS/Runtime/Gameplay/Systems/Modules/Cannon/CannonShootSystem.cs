@@ -99,7 +99,7 @@ namespace VS.Runtime.Core.Systems
         {
             CacheValues();
             _inputService.OnEndDrag += OnEndDrag_Handler;
-            _nextColor = BubbleExtensions.GetRandomColor();
+            _nextColor = BubbleExtensions.GetRandomColor(_model.GetFieldColors());
             Debug.Log($"Next color: {_nextColor}");
         }
 
@@ -123,7 +123,7 @@ namespace VS.Runtime.Core.Systems
             var projectile = Object.Instantiate(_bubblePrefab, _bulletSpawnRoot.position, Quaternion.identity);
             projectile.transform.localScale = _params.CellSize;
             projectile.SetColor(_nextColor);
-            _nextColor = BubbleExtensions.GetRandomColor();
+            _nextColor = BubbleExtensions.GetRandomColor(_model.GetFieldColors());
             Debug.Log($"Next color: {_nextColor}");
             
             entlong projectileEntity = _world.NewEntityLong();
@@ -176,7 +176,11 @@ namespace VS.Runtime.Core.Systems
 
                 if (hit.normal == Vector2.down)
                 {
+                    CellView cell = _model.FindClosestCell(hit.point, ECellState.Free);
+                    Vector3 cellPosition = cell.transform.position;
+                    index = cell.Coord;
                     collisionPoints.Add(hit.point);
+                    collisionPoints.Add(cellPosition);
                     break;
                 }
 

@@ -5,6 +5,8 @@ using VS.Core.Configs.Features;
 using VS.Runtime.Core.Components;
 using VS.Runtime.Core.Components.OneFrameComponents.Events;
 using VS.Runtime.Core.Components.StateMachine;
+using VS.Runtime.Core.Enums;
+using VS.Runtime.Core.Models;
 
 #if ENABLE_IL2CPP
 using Unity.IL2CPP.CompilerServices;
@@ -35,12 +37,14 @@ namespace VS.Runtime.Core.Systems
 
         private readonly SessionSettingsConfig _config;
         private readonly EcsDefaultWorld _world;
+        private readonly GridModel _gridModel;
 
         [Inject]
-        public EndGameConditionCheckSystem(SessionSettingsConfig config, EcsDefaultWorld world)
+        public EndGameConditionCheckSystem(SessionSettingsConfig config, EcsDefaultWorld world, GridModel gridModel)
         {
             _world = world;
             _config = config;
+            _gridModel = gridModel;
         }
 
         public void Init()
@@ -54,8 +58,17 @@ namespace VS.Runtime.Core.Systems
 
         public void Run()
         {
-            if (ShouldSkip())
+            // V33: on FieldSettledEvent, check if board is clear
+            if (_world.Where(out FieldSettledAspect _).Count > 0)
+            {
+                if (IsBoardCleared())
+                {
+                    var newEntity = _world.NewEntity();
+                    ref var result = ref _world.GetPool<EndGameResult>().TryAddOrGet(newEntity);
+                    result.GameEndReason = EGameEndReason.BoardIsCleaned;
+                }
                 return;
+            }
 
             foreach (var entity in _world.Where(out TimerAspect aspect))
             {
@@ -81,8 +94,22 @@ namespace VS.Runtime.Core.Systems
             #endif
         }
 
-        // skip end-game check while a FieldSettledEvent is being processed this frame
-        private bool ShouldSkip() =>
-            _world.Where(out FieldSettledAspect _).Count == 1;
+        //TODO: to zlinq
+        private bool IsBoardCleared()
+        {
+            var cells = _gridModel.Grid.Cells;
+            for (int x = 0; x < cells.GetLength(0); x++)
+            {
+                for (int y = 0; y < cells.GetLength(1); y++)
+                {
+                    if (cells[x, y].State == ECellState.Occupied)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
     }
 }

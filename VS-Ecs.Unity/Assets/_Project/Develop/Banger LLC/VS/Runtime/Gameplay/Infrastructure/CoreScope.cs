@@ -11,6 +11,7 @@ using VS.Runtime.Core.Views;
 using VS.Runtime.Services.Grid;
 using VS.Runtime.Services.Input;
 using VS.Runtime.Services.Session;
+using VS.Runtime.Services;
 using VS.Runtime.Shared.UI;
 
 namespace VS.Runtime.Core
@@ -37,6 +38,7 @@ namespace VS.Runtime.Core
             builder.RegisterInstance(_inputHandler);
             builder.RegisterInstance(_refs).As<ICoreGameSceneRefs, IUISceneReferences>();
             builder.RegisterInstance(_levelView).As<ILevel>();
+            builder.Register<IRandomService, RandomService>(Lifetime.Singleton);
             builder.Register<IScoreService, ScoreService>(Lifetime.Singleton);
             builder.Register<ISessionDataService, SessionDataService>(Lifetime.Singleton);
             builder.RegisterInstance(_popupSourceConfig).As<IViewSourceProvider>();

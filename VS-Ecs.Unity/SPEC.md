@@ -36,7 +36,8 @@ Bubble-shooter (VS): player fires colored bubbles at hex grid; match ≥N same-c
      `LobbyViewModel` — `ReactiveCommand EnterGame`; ⊥ `ISceneService`; pure C#
      `LobbyScreen : Screen` — single "Enter the Game" btn; placeholder; ∈ Meta/UI/
      `MetaGameSceneReferences : MonoBehaviour, IMetaGameSceneReferences` — ScreensRoot, PopupsRoot, MessagesRoot, Canvas; ∈ Meta/Infrastructure/
-- cfg.session: `SessionSettingsConfig.SessionEndTime` (int sec, default 180) + `ResultDelayTime` (float sec, default 2.0)
+- cfg.session: `SessionSettingsConfig.SessionEndTime` (int sec, default 180) + `ResultDelayTime` (float sec, default 2.0) + `LevelSeed` (int, default 42; overridden by server before session start)
+- random: `IRandomService` — `Next(int min, int max): int`; `RandomService.Current: IRandomService` static accessor; seeded once at `CoreScope` init from `SessionSettingsConfig.LevelSeed`; sole source of randomness in session
 - cfg.shoot: `ShootingConfig` — MaxReflections, CastOffset, CastDistance, ProjectileLifetimeDuration
 - cfg.grid: `GridSettingsConfig` — rows/cols/cell layout
 
@@ -70,6 +71,13 @@ V26: `MetaFlow` owns Core scene load on `EnterGame`; `LobbyViewModel` ⊥ `IScen
 V27: `IScreenService` ≤1 active Screen at a time; tutorial overlays ∈ separate system (⊥ `IScreenService`)
 V28: `MetaFlow` after Core load additive → `SetSceneEnabled(Meta, false)`; subscribes `SceneManager.sceneUnloaded`; on Core unload → `SetSceneEnabled(Meta, true)` + unsubscribes; `IDisposable.Dispose()` removes subscription on MetaScope teardown
 V29: `SceneService.LoadSceneAsync` — Empty-buffer (`needLoadEmpty`) ! only when `mode == Single`; Additive loads must never trigger Empty (Single) → would destroy existing scenes + dispose parent LifetimeScope containers
+V30: `MoveAlongPathSystem` waypoint advance — detect passage by `dot(nextPoint - position, direction) ≤ 0`; proximity epsilon alone invalid when `speed * dt > sqrt(Epsilon)` → overshoot → direction reversal → collision miss
+V31: `GetUnattached` BFS anchor = ∀ occupied cells with `index.x==0` (top row); `GetLineIndices(n)` returns `(n,j)` for all j — a column, not a row; seeding from column y=0 instead of top row x=0 → ceiling-attached groups wrongly classified as unattached → false drop
+V32: `GetCollisionPoints` ceiling branch (hit.normal==Vector2.down) must call `FindClosestCell(hit.point, Free)` + assign `index` + append cellPosition to path before break; omitting → index=null → bubble placed at `Vector2Int.zero` (top-left cell)
+V33: on `FieldSettledEvent`, if zero Occupied cells remain in grid → `EndGameResult{BoardIsCleaned}` emitted before `EvaluateGameOver()`; missing check → win condition never triggers regardless of board state
+V34: `CannonRotationSystem.ClampRotation` result → `root.localEulerAngles` (⊥ `root.eulerAngles`); applying local-space angles via world setter breaks clamp when parent rotation ≠ identity → cannon exceeds arc → aim line past ceiling
+V35: cannon `_nextColor` sampled only from `EBubbleColor` values with ≥1 Occupied cell on field at shot-prep time; `GridModel` extension `GetFieldColors()` → `HashSet<EBubbleColor>`; `BubbleExtensions.GetRandomColor()` ⊥ full enum range when any color absent from grid
+V36: single `IRandomService` per session; `RandomService.Current` set exactly once at `CoreScope` init; all random calls route through `RandomService.Current`; `new System.Random()` ⊥ anywhere except inside `RandomService` ctor
 
 ## §T TASKS
 id|status|task|cites
@@ -109,6 +117,13 @@ T33|x|`MetaScope` — register `IScreenService` (singleton) + `IViewSourceProvid
 T34|x|`MetaFlow` — `IScreenService.Show<LobbyScreen>()`; subscribe `LobbyViewModel.EnterGame` → `EnqueueParent(_parent)` + `LoadSceneAsync(Core, Additive)`|V25,V26,V27
 T35|x|rename `IPopupSource` → `IViewSourceProvider`, `PopupSourceConfig` → `ViewSourceConfig` across codebase|§I.ui
 T36|x|extract `BaseViewService` (abstract); add `IScreenService` + `ScreenService : BaseViewService`; `PopupService` extends `BaseViewService`|§I.ui,V27
+T37|x|`MoveAlongPathSystem`: replace proximity epsilon with dot-product waypoint-passage check; fix `return` → `continue` in loop body|V30
+T38|x|`GetUnattached`: replace `GetLineIndices(0)` with explicit top-row seed `(0,j)` for j in 0..Columns-1|V31
+T39|x|`CannonShootSystem.GetCollisionPoints`: ceiling branch → `FindClosestCell(hit.point, Free)` + set index + append cellPosition to path (mirror occupied-bubble branch)|V32
+T40|x|`EndGameConditionCheckSystem`: on `FieldSettledEvent` present, scan grid; if zero Occupied cells → emit `EndGameResult{BoardIsCleaned}`|V33
+T41|x|`CannonRotationSystem.OnDrag_Handler`: replace `root.eulerAngles =` → `root.localEulerAngles =`|V34
+T42|x|`GridModel`: add extension method `GetFieldColors() → HashSet<EBubbleColor>` (Occupied cells only); `CannonShootSystem` calls it before each `_nextColor` pick; `BubbleExtensions.GetRandomColor(HashSet<EBubbleColor>)` overload samples from that set|V35
+T43|x|`IRandomService`/`RandomService` (static `Current`); `LevelSeed` in `SessionSettingsConfig`; register in `CoreScope`; replace `BubbleExtensions._random` with `RandomService.Current`|V36
 
 ## §F FOLDER LAYOUT
 ```
@@ -146,3 +161,10 @@ Q3: result overlay is IPopup not IScreen (confirmed); IScreen = singleton full-s
 ## §B BUGS
 id|date|cause|fix
 B1|2026-05-27|`LoadSceneAsync` applied Empty-buffer for Additive loads → destroyed Meta scene + disposed MetaScope container → second Core load: `EnqueueParent(metaScope)` parent dead → VContainer can't reach BootstrapScope → `ISceneService` not found|V29: gate `needLoadEmpty` on `mode==Single`
+B2|2026-05-27|`MoveAlongPathSystem`: sqrMagnitude < 0.01f waypoint check fails when projectile overshoots by > 0.1u → index frozen → direction unchanged → projectile moves away from passed point → reflection skipped → bubble never lands|V30: dot-product passage check; T37
+B3|2026-05-27|`ScoreService.ComputeFinal` applies time+clear bonuses silently → tester sees unexpectedly high score (e.g. 3000) with zero pops; no debug breakdown|add `CustomDebugLog` bonus breakdown in `ComputeFinal`
+B4|2026-05-27|`GetUnattached` seeds BFS from col y=0 (leftmost) via `GetLineIndices(0)`; correct anchor = top row x=0; bubbles attached only to ceiling (not left wall) wrongly dropped|V31
+B5|2026-05-27|`CannonShootSystem.GetCollisionPoints` ceiling branch skips `FindClosestCell` + index assignment → index=null → bubble placed at `Vector2Int.zero` on every ceiling shot|V32
+B6|2026-05-27|`EndGameConditionCheckSystem` only emits `TimeIsUp`; no system checks all-Free grid after settle → `EvaluateGameOver()` never true for win → `BoardIsCleaned` never triggered|V33
+B7|2026-06-01|`CannonRotationSystem.ClampRotation` returns local-space angles assigned to `root.eulerAngles` (world setter); non-identity parent rotation → clamp fails → cannon exceeds arc → aim line above ceiling|V34
+B8|2026-06-01|`CannonShootSystem._nextColor` via `BubbleExtensions.GetRandomColor()` samples full enum (1..6) regardless of field state → cannon can shoot color absent from grid → un-matchable shots|V35
