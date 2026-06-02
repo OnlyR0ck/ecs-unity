@@ -94,13 +94,21 @@ namespace VS.Runtime.Core.Systems
             #endif
         }
 
+        //TODO: to zlinq
         private bool IsBoardCleared()
         {
             var cells = _gridModel.Grid.Cells;
             for (int x = 0; x < cells.GetLength(0); x++)
+            {
                 for (int y = 0; y < cells.GetLength(1); y++)
+                {
                     if (cells[x, y].State == ECellState.Occupied)
+                    {
                         return false;
+                    }
+                }
+            }
+
             return true;
         }
     }
