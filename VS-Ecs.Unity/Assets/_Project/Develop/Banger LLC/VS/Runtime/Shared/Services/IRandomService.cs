@@ -1,4 +1,4 @@
-санnamespace VS.Runtime.Services
+namespace VS.Runtime.Services
 {
     public interface IRandomService
     {
